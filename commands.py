@@ -38,9 +38,9 @@ def create_tables():
 def seed_db_logic():
      # Create roles
     roles = [
-        Role(role_name="Admin", can_view_all=True, can_manage=True, can_action=True),
-        Role(role_name="User", can_view_all=False, can_manage=False, can_action=True),
-        Role(role_name="Tech", can_view_all=True, can_manage=False, can_action=True)
+        Role(role_name="admin", can_view_all=True, can_manage=True, can_action=True),
+        Role(role_name="user", can_view_all=False, can_manage=False, can_action=True),
+        Role(role_name="tech", can_view_all=True, can_manage=False, can_action=True)
     ]
 
     db.session.add_all(roles)
