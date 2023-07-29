@@ -162,6 +162,8 @@ def seed_db():
 @db_commands.cli.command('reset')
 def reset_db_seed():
     db.drop_all()
+    print("Tables dropped")
     db.create_all()
+    print("Tables created")
     seed_db_logic()
     print('Reset Sucess')

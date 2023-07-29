@@ -3,7 +3,7 @@ from flask_marshmallow import Marshmallow
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-
+# from typing import TYPE_CHECKING
 
 db     = SQLAlchemy()
 ma     = Marshmallow()
@@ -22,6 +22,13 @@ def create_app():
     bcrypt.init_app(app)
     jwt.init_app(app)
 
+    # if TYPE_CHECKING:
+    #     from flask_sqlalchemy.model import Model
+
+    #     BaseModel = db.make_declarative_base(Model)
+    # else:
+    #     BaseModel = db.Model
+    
     from controllers import registerable_controllers
     for controller in registerable_controllers:
         app.register_blueprint(controller)
