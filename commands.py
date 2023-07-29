@@ -143,12 +143,12 @@ def seed_db_logic():
 
     # Create comments
     comments = [
-    Comment(content="This is a comment 1", created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[0].id),
-    Comment(content="This is a comment 2", created_at=datetime.now(), user_id=users[1].id, ticket_id=tickets[1].id),
-    Comment(content="This is a comment 3", created_at=datetime.now(), user_id=users[2].id, ticket_id=tickets[2].id),
-    Comment(content="This is a comment 4", created_at=datetime.now(), user_id=users[3].id, ticket_id=tickets[3].id),
-    Comment(content="This is a comment 5", created_at=datetime.now(), user_id=users[4].id, ticket_id=tickets[4].id),
-    Comment(content="This is a comment 6", created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[5].id),
+    Comment(content="This is a comment 1", created_at=datetime.now(), created_by_user_id=users[0].id, ticket_id=tickets[0].id),
+    Comment(content="This is a comment 2", created_at=datetime.now(), created_by_user_id=users[1].id, ticket_id=tickets[1].id),
+    Comment(content="This is a comment 3", created_at=datetime.now(), created_by_user_id=users[2].id, ticket_id=tickets[2].id),
+    Comment(content="This is a comment 4", created_at=datetime.now(), created_by_user_id=users[3].id, ticket_id=tickets[3].id),
+    Comment(content="This is a comment 5", created_at=datetime.now(), created_by_user_id=users[4].id, ticket_id=tickets[4].id),
+    Comment(content="This is a comment 6", created_at=datetime.now(), created_by_user_id=users[0].id, ticket_id=tickets[5].id),
 ]
     db.session.add_all(comments)
     db.session.commit()
