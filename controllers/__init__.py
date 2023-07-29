@@ -1,6 +1,6 @@
 from controllers.home_controller import home
 from controllers.auth_controller import auth
-from controllers.user_controller import users
+from controllers.user_controller import users_bp
 
 
 # how supposed to work 
@@ -16,5 +16,5 @@ from controllers.user_controller import users
 registerable_controllers = [
     home,
     auth,
-    users,
+    users_bp,
 ]

@@ -7,14 +7,18 @@ from main import db, bcrypt
 # models and schemas
 from models.user import User
 from schemas.user_schema import user_schema, users_schema
+from schemas.comment_schema import comment_schema, comments_schema
 
-users = Blueprint("users", __name__, url_prefix="/users")
+users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 
 # GET /tickets: Retrieves a list of all tickets
-@users.get("/")
+@users_bp.get("/")
 def get_all_users():
-    users_query = db.select
+    users_query = db.select(User)
+    users = db.session.scalars(users_query)
+    return users_schema.dump(users)
+    
     
     
 
