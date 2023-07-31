@@ -3,10 +3,12 @@ from marshmallow import fields
 
 
 class CommentSchema(ma.Schema):
-    user = fields.Nested('UserSchema', only=['name', 'email'])
-    class Meta:
+    user   = fields.Nested('UserSchema', only=['name', 'email'])
+    ticket = fields.Nested('TicketSchema', only=['title', 'description'])
+    
+    class Meta: 
         ordered = True
-        fields = ('id', 'content', 'created_at', 'user', 'ticket_id')
+        fields  = ('id', 'content', 'created_at', 'user', 'ticket')
     
     
 comment_schema = CommentSchema()
