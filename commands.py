@@ -26,7 +26,7 @@ def test_flask():
 def drop_tables():
     # drop tables
     # Execute a raw SQL query to drop the table using CASCADE
-    db.engine.execute(text("DROP TABLE tickets CASCADE"))
+    # db.engine.execute(text("DROP TABLE tickets CASCADE"))
     db.drop_all()
     print("Tables dropped")
 
@@ -121,57 +121,28 @@ def seed_db_logic():
             priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
             created_by = users[0].id, assigned_to = users[4].id
         ),
-    ]
-    # tickets = [
-    # Ticket(
-    #     title      = "Issue 1",   description = "This is issue 1",
-    #     priority   = "High",      status      = "Open",            created_at = datetime.now(),
-    #     created_by = users[0],    assigned_to = users[1]
-    # ),
-    # Ticket(
-    #     title      = "Issue 2",   description = "This is issue 2",
-    #     priority   = "Low",       status      = "Closed",          created_at = datetime.now(),
-    #     created_by = users[1],    assigned_to = users[0]
-    # ),
-    # Ticket(
-    #     title      = "Issue 3",   description = "This is issue 3",
-    #     priority   = "Medium",    status      = "Open",            created_at = datetime.now(),
-    #     created_by = users[2],    assigned_to = users[3]
-    # ),
-    # Ticket(
-    #     title      = "Issue 4",   description = "This is issue 4",
-    #     priority   = "High",      status      = "Closed",          created_at = datetime.now(),
-    #     created_by = users[3],    assigned_to = users[2]
-    # ),
-    # Ticket(
-    #     title      = "Issue 5",   description = "This is issue 5",
-    #     priority   = "Low",       status      = "Open",            created_at = datetime.now(),
-    #     created_by = users[4],    assigned_to = users[0]
-    # ),
-    # Ticket(
-    #     title      = "Issue 6",   description = "This is issue 6",
-    #     priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
-    #     created_by = users[0],    assigned_to = users[4]
-    # ),
-    # ]
+            ]
+# change to manual assignment of ticket_id cause idk why it wont work like everyone else 
     comments = [
         Comment(content="This is a comment on issue 1 by the user Admin1", 
-                created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[0].id),
+                created_at=datetime.now(), user_id=users[0].id, ticket_id=1),
         Comment(content="This is a comment on issue 2 by the user Meg2", 
-                created_at=datetime.now(), user_id=users[1].id, ticket_id=tickets[1].id),
+                created_at=datetime.now(), user_id=users[1].id, ticket_id=2),
         Comment(content="This is a comment on issue 3 by the user Bob3", 
-                created_at=datetime.now(), user_id=users[2].id, ticket_id=tickets[2].id),
+                created_at=datetime.now(), user_id=users[2].id, ticket_id=3),
         Comment(content="This is a comment on issue 4 by the user Caleb4", 
-                created_at=datetime.now(), user_id=users[3].id, ticket_id=tickets[3].id),
+                created_at=datetime.now(), user_id=users[3].id, ticket_id=4),
         Comment(content="This is a comment on issue 5 by the user Zach5", 
-                created_at=datetime.now(), user_id=users[4].id, ticket_id=tickets[4].id),
+                created_at=datetime.now(), user_id=users[4].id, ticket_id=5),
         Comment(content="This is a comment on issue 6 by the user Admin1", 
-                created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[5].id),
+                created_at=datetime.now(), user_id=users[0].id, ticket_id=6,)
+        # Comment(content="This is a comment on issue 6 by the user Admin1", 
+        #         created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[5].id),
 ]
 
     db.session.add_all(tickets)
+    db.session.commit()
     db.session.add_all(comments)
-    # db.session.commit()
     db.session.commit()
 
     # # Create categories

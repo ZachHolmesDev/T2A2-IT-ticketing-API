@@ -18,9 +18,6 @@ def get_all_tickets():
     tickets_query = db.select(Ticket)
     tickets       = db.session.scalars(tickets_query)
     return tickets_schema.dump(tickets)
-    # tickets_query = db.select(ticket.created_comments)
-    # tickets       = db.session.scalars(tickets_query)
-    # return tickets_schema.dump(tickets)
     
     
     
@@ -28,16 +25,16 @@ def get_all_tickets():
 
 # GET /tickets/<id>: Retrieves a specific ticket by its ID
 @tickets_bp.get('/<int:id>')
-def get_ticket_by_id(id):
-    ticket_query = db.select(Ticket).filter_by(id=id)
-    ticket       = db.session.scalars(ticket_query)
+def get_ticket_by_id(id): 
+    stmt   = db.select(Ticket).filter_by(id=id)
+    ticket = db.session.scalars(stmt)
     return tickets_schema.dump(ticket)
 
 
 @tickets_bp.get('/<int:id>/comments')
-def get_ticket_and_comments_by_id(id):
-    ticket_query = db.select(Ticket ).filter_by(id=id)
-    ticket       = db.session.scalars(ticket_query)
+def get_ticket_and_comments_by_id(id): 
+    stmt   = db.select(Ticket ).filter_by(id=id)
+    ticket = db.session.scalars(stmt)
     return tickets_schema.dump(ticket)
 
 
