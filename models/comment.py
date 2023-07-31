@@ -21,6 +21,8 @@ class Comment(db.Model):
     # user = db.relationship("User", backref="comments")
 
     # user_id = db.relationship("User", back_populates="created_comments", cascade='all')
-    # ticket     = db.relationship("Ticket", back_populates="ticket_comments")
     
-    user = db.relationship('User', back_populates='created_comments')
+    ticket = db.relationship("Ticket", 
+                             back_populates="comments")
+    user   = db.relationship('User', 
+                             back_populates='created_comments')

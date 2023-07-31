@@ -30,9 +30,9 @@ class Ticket(db.Model):
     assigned_to = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # relationship
-    # ticket_comments = db.relationship(
-    #                         "Comments", 
-    #                         back_populates="comment_ticket")
+    comments = db.relationship("Comment", 
+                                back_populates="ticket", 
+                                cascade='all, delete')
     # ticket_creator  = db.relationship(
     #                         "User",
     #                           foreign_keys=[created_by])
