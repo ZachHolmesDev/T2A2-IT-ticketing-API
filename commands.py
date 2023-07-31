@@ -2,12 +2,14 @@ from flask import Blueprint
 from main import db
 from main import bcrypt
 from datetime import datetime
+from sqlalchemy import text
+
 
 # models
-from models.categories import Categories 
+# from models.categories import Categories 
 from models.comment import Comment 
 from models.role import Role 
-from models.ticket_categories import TicketCategories
+# from models.ticket_categories import TicketCategories
 from models.ticket import Ticket
 from models.user import User
 
@@ -23,6 +25,8 @@ def test_flask():
 @db_commands.cli.command("drop")
 def drop_tables():
     # drop tables
+    # Execute a raw SQL query to drop the table using CASCADE
+    db.engine.execute(text("DROP TABLE tickets CASCADE"))
     db.drop_all()
     print("Tables dropped")
 
@@ -49,31 +53,31 @@ def seed_db_logic():
     # Create users
     users = [
         User(
-            name          = 'Admin',
+            name          = 'Admin1',
             email         = 'admin@admin.com',
             password_hash = bcrypt.generate_password_hash('admin123').decode('utf-8'),
             role          = roles[0]
         ),
         User(
-            name          = 'User User1',
+            name          = 'User Meg2',
             email         = 'user1@email.com',
             password_hash = bcrypt.generate_password_hash('user1pw').decode('utf-8'),
             role          = roles[1]
         ),
         User(
-            name          = 'User User2',
+            name          = 'User Bob3',
             email         = 'user2@email.com',
             password_hash = bcrypt.generate_password_hash('user2pw').decode('utf-8'),
             role          = roles[1]
         ),
         User(
-            name          = 'User User3',
+            name          = 'User Caleb4',
             email         = 'user3@email.com',
             password_hash = bcrypt.generate_password_hash('user3pw').decode('utf-8'),
             role          = roles[1]
         ),
         User(
-            name          = 'Tech User',
+            name          = 'Tech Zach5',
             email         = 'tech@email.com',
             password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
             role          = roles[2]
@@ -83,75 +87,119 @@ def seed_db_logic():
     db.session.add_all(users)
     db.session.commit()
 
+    
+
     # Create tickets
     tickets = [
         Ticket(
-            title      = "TEST Issue 1",   description = "This is issue 1", priority = "High", status = "Open",
-            created_at=datetime.now(), created_by = users[0].id, assigned_to = users[1].id
+            title      = "Issue 1",   description = "This is issue 1",
+            priority   = "High",      status      = "Open",            created_at = datetime.now(),
+            created_by = users[0].id, assigned_to = users[1].id
         ),
         Ticket(
-            title      = "Issue 2",   description = "This is issue 2", priority = "Low", status = "Closed",
+            title      = "Issue 2",   description = "This is issue 2",
+            priority   = "Low",       status      = "Closed",          created_at = datetime.now(),
             created_by = users[1].id, assigned_to = users[0].id
         ),
         Ticket(
-            title      = "Issue 3",   description = "This is issue 3", priority = "Medium", status = "Open",
+            title      = "Issue 3",   description = "This is issue 3",
+            priority   = "Medium",    status      = "Open",            created_at = datetime.now(),
             created_by = users[2].id, assigned_to = users[3].id
         ),
         Ticket(
-            title      = "Issue 4",   description = "This is issue 4", priority = "High", status = "Closed",
+            title      = "Issue 4",   description = "This is issue 4",
+            priority   = "High",      status      = "Closed",          created_at = datetime.now(),
             created_by = users[3].id, assigned_to = users[2].id
         ),
         Ticket(
-            title      = "Issue 5",   description = "This is issue 5", priority = "Low", status = "Open",
+            title      = "Issue 5",   description = "This is issue 5",
+            priority   = "Low",       status      = "Open",            created_at = datetime.now(),
             created_by = users[4].id, assigned_to = users[0].id
         ),
         Ticket(
-            title      = "Issue 6",   description = "This is issue 6", priority = "Medium", status = "Closed",
+            title      = "Issue 6",   description = "This is issue 6",
+            priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
             created_by = users[0].id, assigned_to = users[4].id
         ),
     ]
+    # tickets = [
+    # Ticket(
+    #     title      = "Issue 1",   description = "This is issue 1",
+    #     priority   = "High",      status      = "Open",            created_at = datetime.now(),
+    #     created_by = users[0],    assigned_to = users[1]
+    # ),
+    # Ticket(
+    #     title      = "Issue 2",   description = "This is issue 2",
+    #     priority   = "Low",       status      = "Closed",          created_at = datetime.now(),
+    #     created_by = users[1],    assigned_to = users[0]
+    # ),
+    # Ticket(
+    #     title      = "Issue 3",   description = "This is issue 3",
+    #     priority   = "Medium",    status      = "Open",            created_at = datetime.now(),
+    #     created_by = users[2],    assigned_to = users[3]
+    # ),
+    # Ticket(
+    #     title      = "Issue 4",   description = "This is issue 4",
+    #     priority   = "High",      status      = "Closed",          created_at = datetime.now(),
+    #     created_by = users[3],    assigned_to = users[2]
+    # ),
+    # Ticket(
+    #     title      = "Issue 5",   description = "This is issue 5",
+    #     priority   = "Low",       status      = "Open",            created_at = datetime.now(),
+    #     created_by = users[4],    assigned_to = users[0]
+    # ),
+    # Ticket(
+    #     title      = "Issue 6",   description = "This is issue 6",
+    #     priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
+    #     created_by = users[0],    assigned_to = users[4]
+    # ),
+    # ]
+    comments = [
+        Comment(content="This is a comment on issue 1 by the user Admin1", 
+                created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[0].id),
+        Comment(content="This is a comment on issue 2 by the user Meg2", 
+                created_at=datetime.now(), user_id=users[1].id, ticket_id=tickets[1].id),
+        Comment(content="This is a comment on issue 3 by the user Bob3", 
+                created_at=datetime.now(), user_id=users[2].id, ticket_id=tickets[2].id),
+        Comment(content="This is a comment on issue 4 by the user Caleb4", 
+                created_at=datetime.now(), user_id=users[3].id, ticket_id=tickets[3].id),
+        Comment(content="This is a comment on issue 5 by the user Zach5", 
+                created_at=datetime.now(), user_id=users[4].id, ticket_id=tickets[4].id),
+        Comment(content="This is a comment on issue 6 by the user Admin1", 
+                created_at=datetime.now(), user_id=users[0].id, ticket_id=tickets[5].id),
+]
 
     db.session.add_all(tickets)
-    db.session.commit()
-
-    # Create categories
-    categories = [
-        Categories(categorie_name="Hardware Issues"),
-        Categories(categorie_name="Software Errors"),
-        Categories(categorie_name="Network Problems"),
-        Categories(categorie_name="Email and Communication"),
-        Categories(categorie_name="Security and Access"),
-        Categories(categorie_name="General Inquiries"),
-    ]
-
-    db.session.add_all(categories)
-    db.session.commit()
-
-    # Link tickets to categories
-    ticket_categories = [
-    TicketCategories(ticket_id=tickets[0].id, category_id=categories[0].id),
-    TicketCategories(ticket_id=tickets[1].id, category_id=categories[1].id),
-    TicketCategories(ticket_id=tickets[2].id, category_id=categories[0].id),
-    TicketCategories(ticket_id=tickets[3].id, category_id=categories[1].id),
-    TicketCategories(ticket_id=tickets[4].id, category_id=categories[0].id),
-    TicketCategories(ticket_id=tickets[5].id, category_id=categories[1].id),
-    ]
-
-
-    db.session.add_all(ticket_categories)
-    db.session.commit()
-
-    # Create comments
-    comments = [
-    Comment(content="This is a comment 1", created_at=datetime.now(), created_by_user_id=users[0].id, ticket_id=tickets[0].id),
-    Comment(content="This is a comment 2", created_at=datetime.now(), created_by_user_id=users[1].id, ticket_id=tickets[1].id),
-    Comment(content="This is a comment 3", created_at=datetime.now(), created_by_user_id=users[2].id, ticket_id=tickets[2].id),
-    Comment(content="This is a comment 4", created_at=datetime.now(), created_by_user_id=users[3].id, ticket_id=tickets[3].id),
-    Comment(content="This is a comment 5", created_at=datetime.now(), created_by_user_id=users[4].id, ticket_id=tickets[4].id),
-    Comment(content="This is a comment 6", created_at=datetime.now(), created_by_user_id=users[0].id, ticket_id=tickets[5].id),
-]
     db.session.add_all(comments)
+    # db.session.commit()
     db.session.commit()
+
+    # # Create categories
+    # categories = [
+    #     Categories(categorie_name="Hardware Issues"),
+    #     Categories(categorie_name="Software Errors"),
+    #     Categories(categorie_name="Network Problems"),
+    #     Categories(categorie_name="Email and Communication"),
+    #     Categories(categorie_name="Security and Access"),
+    #     Categories(categorie_name="General Inquiries"),
+    # ]
+
+    # db.session.add_all(categories)
+    # # db.session.commit()
+
+    # # Link tickets to categories
+    # ticket_categories = [
+    # TicketCategories(ticket_id=tickets[0].id, category_id=categories[0].id),
+    # TicketCategories(ticket_id=tickets[1].id, category_id=categories[1].id),
+    # TicketCategories(ticket_id=tickets[2].id, category_id=categories[0].id),
+    # TicketCategories(ticket_id=tickets[3].id, category_id=categories[1].id),
+    # TicketCategories(ticket_id=tickets[4].id, category_id=categories[0].id),
+    # TicketCategories(ticket_id=tickets[5].id, category_id=categories[1].id),
+    # ]
+
+    # db.session.add_all(ticket_categories)
+    # db.session.commit()
+
  
     print("Tables seeded")
 
@@ -161,6 +209,8 @@ def seed_db():
 
 @db_commands.cli.command('reset')
 def reset_db_seed():
+
+        
     db.drop_all()
     print("Tables dropped")
     db.create_all()
