@@ -21,8 +21,10 @@ class Ticket(db.Model):
     id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title       = db.Column(db.String)
     description = db.Column(db.Text)
+
     priority    = db.Column(db.String)
     status      = db.Column(db.String)
+    
     created_at  = db.Column(db.DateTime)
     updated_at  = db.Column(db.DateTime)
 
@@ -30,12 +32,12 @@ class Ticket(db.Model):
     assigned_to = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # relationship
-    comments = db.relationship("Comment", 
-                                back_populates="ticket", 
-                                cascade='all, delete')
-    # ticket_creator  = db.relationship(
-    #                         "User",
-    #                           foreign_keys=[created_by])
+    comments        = db.relationship("Comment", 
+                                       back_populates = "ticket",
+                                       cascade        = 'all, delete')
+    created_by_user = db.relationship('User',
+                                       foreign_keys   = 'Ticket.created_by',
+                                       back_populates = 'created_tickets')
     # ticket_assignee = db.relationship(
     #                         "User", 
     #                         foreign_keys=[assigned_to])

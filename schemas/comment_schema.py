@@ -8,7 +8,11 @@ class CommentSchema(ma.Schema):
     
     class Meta: 
         ordered = True
-        fields  = ('id', 'content', 'created_at', 'user', 'ticket')
+        fields  = ('id', 
+                   'content', 
+                   'created_at', 
+                   'user', 
+                   'ticket')
     
     
 comment_schema = CommentSchema()

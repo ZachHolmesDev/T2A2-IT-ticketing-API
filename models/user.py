@@ -27,11 +27,11 @@ class User(db.Model):
     role_id       = db.Column(db.Integer, db.ForeignKey('role.id'))
     
     
-    # created_tickets = db.relationship("Ticket",
-    #                                   foreign_keys='Ticket.created_by', 
-    #                                   back_populates="created_by_user", 
-    #                                   cascade='all, delete'
-    #                                   )
+    created_tickets = db.relationship("Ticket",
+                                      foreign_keys='Ticket.created_by', 
+                                      back_populates="created_by_user", 
+                                      cascade='all, delete'
+                                      )
     # assigned_tickets = db.relationship("Ticket",
     #                                    foreign_keys='Ticket.assigned_to', 
     #                                    back_populates="assigned_to_user", 

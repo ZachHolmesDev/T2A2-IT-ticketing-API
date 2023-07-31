@@ -5,8 +5,13 @@ from marshmallow import fields
 # VALID_PRIORITIES = ('Low', 'Medium', 'High', 'EMERGANCY')
 
 class TicketSchema(ma.Schema):
-    comments = fields.List(fields.Nested('CommentSchema', exclude=['ticket']))
-
+    comments        = fields.List(fields.Nested(
+                                        'CommentSchema', 
+                                        exclude=['ticket']))
+    created_by_user = fields.Nested(
+                            'UserSchema', 
+                            exclude=['created_tickets', 
+                                     'created_comments'])
     class Meta:
         fields = ('id', 
                   'title', 
@@ -16,7 +21,7 @@ class TicketSchema(ma.Schema):
                   'created_at', 
                   'updated_at', 
                   'user_id', 
-                  'assigned_to', 
+                  'created_by_user', 
                   'comments')
 
 ticket_schema = TicketSchema()

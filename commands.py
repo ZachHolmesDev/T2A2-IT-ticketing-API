@@ -78,7 +78,13 @@ def seed_db_logic():
         ),
         User(
             name          = 'Tech Zach5',
-            email         = 'tech@email.com',
+            email         = 'tech_Zach@email.com',
+            password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
+            role          = roles[2]
+        ),
+        User(
+            name          = 'Tech Archie6',
+            email         = 'tech_Archie@email.com',
             password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
             role          = roles[2]
         ),
@@ -94,32 +100,32 @@ def seed_db_logic():
         Ticket(
             title      = "Issue 1",   description = "This is issue 1",
             priority   = "High",      status      = "Open",            created_at = datetime.now(),
-            created_by = users[0].id, assigned_to = users[1].id
+            created_by = users[1].id, assigned_to = users[0].id
         ),
         Ticket(
             title      = "Issue 2",   description = "This is issue 2",
             priority   = "Low",       status      = "Closed",          created_at = datetime.now(),
-            created_by = users[1].id, assigned_to = users[0].id
+            created_by = users[1].id, assigned_to = users[4].id
         ),
         Ticket(
             title      = "Issue 3",   description = "This is issue 3",
             priority   = "Medium",    status      = "Open",            created_at = datetime.now(),
-            created_by = users[2].id, assigned_to = users[3].id
+            created_by = users[2].id, assigned_to = users[4].id
         ),
         Ticket(
             title      = "Issue 4",   description = "This is issue 4",
             priority   = "High",      status      = "Closed",          created_at = datetime.now(),
-            created_by = users[3].id, assigned_to = users[2].id
+            created_by = users[3].id, assigned_to = users[5].id
         ),
         Ticket(
             title      = "Issue 5",   description = "This is issue 5",
             priority   = "Low",       status      = "Open",            created_at = datetime.now(),
-            created_by = users[4].id, assigned_to = users[0].id
+            created_by = users[4].id, assigned_to = users[5].id
         ),
         Ticket(
             title      = "Issue 6",   description = "This is issue 6",
             priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
-            created_by = users[0].id, assigned_to = users[4].id
+            created_by = users[4].id, assigned_to = users[0].id
         ),
             ]
 # change to manual assignment of ticket_id cause idk why it wont work like everyone else 
