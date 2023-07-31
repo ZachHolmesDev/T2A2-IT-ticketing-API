@@ -14,23 +14,23 @@ comments_bp = Blueprint("comments", __name__, url_prefix="/comments")
 
 # GET /tickets: Retrieves a list of all tickets
 @comments_bp.get("/")
-def get_all_comments():
-    stmt  = db.select(Comment)
+def get_all_comments(): 
+    stmt     = db.select(Comment)
     comments = db.session.scalars(stmt)
     return comments_schema.dump(comments)
 
 
 # GET /tickets/<id>: Retrieves a specific ticket by its ID
 @comments_bp.get('/<int:id>')
-def get_user_by_id(id):
-    stmt  = db.select(Comment).filter_by(id=id)
+def get_user_by_id(id): 
+    stmt    = db.select(Comment).filter_by(id=id)
     comment = db.session.scalar(stmt)
     return comment_schema.dump(comment)
 
 
 @comments_bp.get('/<int:id>/comments')
-def get_user_and_comments_by_id(id):
-    stmt  = db.select(Comment).filter_by(id=id)
+def get_user_and_comments_by_id(id): 
+    stmt = db.select(Comment).filter_by(id=id)
     user = db.session.scalar(stmt)
     return user_schema.dump(user)
 

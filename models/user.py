@@ -38,11 +38,7 @@ class User(db.Model):
     #                                    cascade='all, delete'
     #                                    )
     
-    
-    # created_comments = db.relationship("Comment", 
-    #                                    backref="user",
-    #                                    cascade='all, delete'
-    #                                    )
 
-
-    created_comments = db.relationship('Comment', back_populates='user', cascade='all, delete')
+    created_comments = db.relationship('Comment', 
+                            back_populates='user', 
+                            cascade='all, delete')

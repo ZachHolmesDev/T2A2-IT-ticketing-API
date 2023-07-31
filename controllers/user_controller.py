@@ -12,7 +12,7 @@ from schemas.comment_schema import comment_schema, comments_schema
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 
-# GET /tickets: Retrieves a list of all tickets
+# GET /users: Retrieves a list of all users
 @users_bp.get("/")
 def get_all_users():
     stmt  = db.select(User)
@@ -20,17 +20,17 @@ def get_all_users():
     return users_schema.dump(users)
 
 
-# GET /tickets/<id>: Retrieves a specific ticket by its ID
+# GET /users/<id>: Retrieves a specific ticket by its ID
 @users_bp.get('/<int:id>')
-def get_user_by_id(id):
-    stmt  = db.select(User).filter_by(id=id)
+def get_user_by_id(id): 
+    stmt = db.select(User).filter_by(id=id)
     user = db.session.scalar(stmt)
     return user_schema.dump(user)
 
 
 @users_bp.get('/<int:id>/comments')
-def get_user_and_comments_by_id(id):
-    stmt  = db.select(User).filter_by(id=id)
+def get_user_and_comments_by_id(id): 
+    stmt = db.select(User).filter_by(id=id)
     user = db.session.scalar(stmt)
     return user_schema.dump(user)
 
