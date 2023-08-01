@@ -3,9 +3,7 @@ from marshmallow import fields
 
 
 class UserSchema(ma.Schema):
-    created_comments = fields.List(fields.Nested('CommentSchema', exclude=['user']))
-    created_tickets  = fields.List(fields.Nested('TicketSchema', exclude=['created_by_user'] ))
-    
+    # feilds to expose
     class Meta: 
         ordered = True
         fields = ('id', 
@@ -15,6 +13,12 @@ class UserSchema(ma.Schema):
                   'role_id',
                   'created_tickets', 
                   'created_comments', )
+    # relations
+    created_comments = fields.List(fields.Nested('CommentSchema', exclude=['user']))
+    created_tickets  = fields.List(fields.Nested('TicketSchema', exclude=['created_by_user'] ))
+
+
+
 
 user_schema  = UserSchema(exclude=['password_hash'])
 users_schema = UserSchema(many=True, exclude=['password_hash'])

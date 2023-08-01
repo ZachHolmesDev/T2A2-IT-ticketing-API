@@ -40,6 +40,7 @@ def create_tables():
 
 # seed function is defined seperatly for reuse  
 def seed_db_logic():
+    print('start seeding')
      # Create roles
     roles = [
         Role(role_name="admin", can_view_all=True, can_manage=True, can_action=True),
@@ -100,32 +101,32 @@ def seed_db_logic():
         Ticket(
             title      = "Issue 1",   description = "This is issue 1",
             priority   = "High",      status      = "Open",            created_at = datetime.now(),
-            created_by = users[1].id, assigned_to = users[0].id
+            created_by_id = users[1].id, assigned_to_id = users[0].id
         ),
         Ticket(
             title      = "Issue 2",   description = "This is issue 2",
             priority   = "Low",       status      = "Closed",          created_at = datetime.now(),
-            created_by = users[1].id, assigned_to = users[4].id
+            created_by_id = users[1].id, assigned_to_id = users[4].id
         ),
         Ticket(
             title      = "Issue 3",   description = "This is issue 3",
             priority   = "Medium",    status      = "Open",            created_at = datetime.now(),
-            created_by = users[2].id, assigned_to = users[4].id
+            created_by_id = users[2].id, assigned_to_id = users[4].id
         ),
         Ticket(
             title      = "Issue 4",   description = "This is issue 4",
             priority   = "High",      status      = "Closed",          created_at = datetime.now(),
-            created_by = users[3].id, assigned_to = users[5].id
+            created_by_id = users[3].id, assigned_to_id = users[5].id
         ),
         Ticket(
             title      = "Issue 5",   description = "This is issue 5",
             priority   = "Low",       status      = "Open",            created_at = datetime.now(),
-            created_by = users[4].id, assigned_to = users[5].id
+            created_by_id = users[4].id, assigned_to_id = users[5].id
         ),
         Ticket(
             title      = "Issue 6",   description = "This is issue 6",
             priority   = "Medium",    status      = "Closed",          created_at = datetime.now(),
-            created_by = users[4].id, assigned_to = users[0].id
+            created_by_id = users[4].id, assigned_to_id = users[0].id
         ),
             ]
 # change to manual assignment of ticket_id cause idk why it wont work like everyone else 
