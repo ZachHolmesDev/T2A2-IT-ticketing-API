@@ -42,8 +42,8 @@ def auth_register():
     user_to_add = User(name          = new_user_request.get('name'),
                        email         = new_user_request.get('email'),
                        password_hash = bcrypt.generate_password_hash(new_user_request.get('password')).decode('utf-8'),
+                       role_id       = new_user_role
                        # only an admin should be able to create new admins and techs can make other techs ?
-                       role_id = new_user_role
                     )
     try:
         # Add and Commit the new user to the database
@@ -54,36 +54,6 @@ def auth_register():
     except IntegrityError as err:
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return { 'error': 'Email address already in use' }, 409
-# @auth.post('/register')
-# def auth_register():
-    
-#     # get body data
-#     new_user_request = request.get_json()
-    
-#     # check if user exists
-#     # pass
-    
-#     # if user dosent already create new user
-# # needs err hnadling
-#     new_user_role = db.session.query(Role).filter_by(
-#                     role_name=new_user_request.get('role')
-#                     ).first().id
-
-#     # need better name for var 
-#     user_to_add = User(name          = new_user_request.get('name'),
-#                        email         = new_user_request.get('email'),
-#                        password_hash = bcrypt.generate_password_hash(new_user_request.get('password')).decode('utf-8'),
-#                        # onty an admin should be able to create new admins 
-#                        # techs can make other techs ?
-#                        # need to search for role by name and get the ID od that role ?
-#                        role_id = new_user_role
-#                     )
-    
-#     # Add and Commit the new user to the database
-#     db.session.add(user_to_add)
-#     db.session.commit()
-    
-#     return user_schema.dump(user_to_add), 201
 
 # Login:
 # POST /login: Checks the user credentials and returns a JWT.
