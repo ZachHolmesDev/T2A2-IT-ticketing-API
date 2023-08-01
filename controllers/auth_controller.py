@@ -59,4 +59,18 @@ def auth_register():
 # POST /login: Checks the user credentials and returns a JWT.
 @auth.post('/login')
 def login():
-    pass
+    login_request = request.get_json()
+
+    stmt = db.select(User).filter_by(email=login_request.get('email'))
+    user = db.session.scalar(stmt)
+    
+    if user and bcrypt.check_password_hash(user.password_hash, login_request.get('password')):
+        
+        # create token with identity
+        token = create_access_token(identity=str(user.id),
+                                    expires_delta=timedelta(hours=2))
+        
+        return {'message':f'welcome {user.name} here is your token', 
+                'token': token }
+    else:
+        return { 'error': 'Invalid email or password' }, 401
