@@ -110,12 +110,12 @@ def seed_db_logic():
         Ticket(
             title      = "Issue 4",   description = "This is issue 4",
             priority   = "High",      status      = "Closed",          created_at = datetime.now(),
-            created_by_id = users[3].id, assigned_to_id = users[5].id
+            created_by_id = users[3].id, assigned_to_id = users[4].id
         ),
         Ticket(
             title      = "Issue 5",   description = "This is issue 5",
             priority   = "Low",       status      = "Open",            created_at = datetime.now(),
-            created_by_id = users[4].id, assigned_to_id = users[5].id
+            created_by_id = users[4].id, assigned_to_id = users[4].id
         ),
         Ticket(
             title      = "Issue 6",   description = "This is issue 6",
