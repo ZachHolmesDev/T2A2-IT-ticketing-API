@@ -28,7 +28,7 @@ def get_all_tickets():
 def get_ticket_by_id(id): 
     stmt   = db.select(Ticket).filter_by(id=id)
     ticket = db.session.scalars(stmt)
-    return tickets_schema.dump(ticket)
+    return ticket_schema.dump(ticket)
 
 
 @tickets_bp.get('/<int:id>/comments')

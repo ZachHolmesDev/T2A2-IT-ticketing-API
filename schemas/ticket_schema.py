@@ -19,13 +19,12 @@ class TicketSchema(ma.Schema):
                   'comments')
     # display the relations
     created_by_user = fields.Nested('UserSchema', 
-                                    exclude=['created_tickets', 'created_comments'])
+                                    only=['id','name', 'email', 'role_id'])
     
     assigned_to_user = fields.Nested('UserSchema',
-                                    exclude=['created_tickets', 'assigned_tickets'])
+                                    only=['id','name', 'email', 'role_id'])
     
-    comments        = fields.List(fields.Nested('CommentSchema', 
-                                                exclude=['ticket']))
+    comments        = fields.List(fields.Nested('CommentSchema', exclude=['ticket']))
     # for hiding feilds contextualy 
     # @post_dump(pass_many=True)
 
