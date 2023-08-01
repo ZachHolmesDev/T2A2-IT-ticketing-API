@@ -28,10 +28,10 @@ def get_user_by_id(id):
     return user_schema.dump(user)
 
 
-@users_bp.get('/<int:id>/comments')
-def get_user_and_comments_by_id(id): 
-    stmt = db.select(User).filter_by(id=id)
-    user = db.session.scalar(stmt)
-    return user_schema.dump(user)
+# @users_bp.get('/<int:id>/comments')
+# def get_user_and_comments_by_id(id): 
+#     stmt = db.select(User).filter_by(id=id)
+#     user = db.session.scalar(stmt)
+#     return user_schema.dump(user)
 
 
