@@ -11,12 +11,15 @@ class UserSchema(ma.Schema):
                   'email', 
                   'password_hash',
                   'role_id',
-                  'created_tickets', 
-                  'created_comments', )
+                  'created_tickets',
+                  'assigned_tickets', 
+                  'created_comments' )
     # relations
-    created_comments = fields.List(fields.Nested('CommentSchema', exclude=['user']))
     created_tickets  = fields.List(fields.Nested('TicketSchema', exclude=['created_by_user'] ))
-
+    assigned_tickets = fields.List(fields.Nested('TicketSchema', exclude=['assigned_to_user']))
+    created_comments = fields.List(fields.Nested('CommentSchema', exclude=['user']))
+    # for hiding feilds contextualy 
+    # @post_dump(pass_many=True)
 
 
 

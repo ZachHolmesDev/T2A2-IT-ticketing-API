@@ -14,17 +14,19 @@ class TicketSchema(ma.Schema):
                   'created_at', 
                   'updated_at', 
                   'user_id', 
-                  'created_by_user', 
+                  'created_by_user',
+                  'assigned_to_user',
                   'comments')
     # display the relations
-    comments        = fields.List(fields.Nested(
-                                        'CommentSchema', 
-                                        exclude=['ticket']))
-    created_by_user = fields.Nested(
-                            'UserSchema', 
-                            exclude=['created_tickets', 
-                                     'created_comments'])
-    # for hiding feilds when many hards are viewed
+    created_by_user = fields.Nested('UserSchema', 
+                                    exclude=['created_tickets', 'created_comments'])
+    
+    assigned_to_user = fields.Nested('UserSchema',
+                                    exclude=['created_tickets', 'assigned_tickets'])
+    
+    comments        = fields.List(fields.Nested('CommentSchema', 
+                                                exclude=['ticket']))
+    # for hiding feilds contextualy 
     # @post_dump(pass_many=True)
 
 

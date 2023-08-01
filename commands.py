@@ -83,12 +83,6 @@ def seed_db_logic():
             password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
             role          = roles[2]
         ),
-        User(
-            name          = 'Tech Archie6',
-            email         = 'tech_Archie@email.com',
-            password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
-            role          = roles[2]
-        ),
         ]
 
     db.session.add_all(users)
