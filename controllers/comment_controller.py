@@ -51,6 +51,26 @@ def create_comment():
         return {"message": "Validation Error", "errors": err.messages}, 400
 
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
+@comments_bp.put('/<int:id>')
+@comments_bp.patch('/<int:id>')
+@jwt_required()
+def update_comment(id):
+    body_data = comment_schema.load(request.get_json())
+    stmt      = db.select(Comment).filter_by(id=id)
+    comment   = db.session.scalar(stmt)
+
+    if comment:
+        if str(comment.user_id) != get_jwt_identity():
+            return {'error': 'Only the owner of the comment can edit'}, 403
+
+        comment.ticket_id  = body_data.get('ticket_id') or comment.ticket_id
+        comment.content    = body_data.get('content') or comment.content
+        
+        db.session.commit()
+        return comment_schema.dump(comment)
+    else:
+        return {'error': f'Comment not found with id {id}'}, 404
+
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID
 @comments_bp.delete('/<int:id>')
@@ -61,9 +81,9 @@ def delete_comment(id):
     if not comment: 
         return {"message": "Comment not found"}, 404
 
-    # user_id = get_jwt_identity()
-    # if user_id != comment.user_id:
-    #     return {"message": "Unauthorized"}, 401
+    user_id = get_jwt_identity()
+    if user_id != str(comment.user_id):
+        return {"message": "Unauthorized"}, 401
 
     db.session.delete(comment)
     db.session.commit()

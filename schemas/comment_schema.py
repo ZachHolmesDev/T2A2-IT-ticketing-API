@@ -10,8 +10,10 @@ class CommentSchema(ma.Schema):
         ordered = True
         fields  = ('id', 
                    'content', 
+                   'user',
+                   'user_id',
+                   'ticket_id', 
                    'created_at', 
-                   'user', 
                    'ticket')
     
     
