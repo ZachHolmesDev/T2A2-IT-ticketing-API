@@ -1,6 +1,6 @@
 from datetime import timedelta
 from flask import Blueprint, jsonify, abort, request
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from main import db, bcrypt
 

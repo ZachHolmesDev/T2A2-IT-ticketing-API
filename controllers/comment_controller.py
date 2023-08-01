@@ -1,8 +1,8 @@
-from datetime import timedelta
-from flask import Blueprint, jsonify, abort, request
-from flask_jwt_extended import jwt_required
+from datetime import datetime
+from flask import Blueprint, request
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt_identity
 from marshmallow.exceptions import ValidationError
-from main import db, bcrypt
+from main import db
 
 # models and schemas
 from models.comment import Comment
@@ -24,7 +24,7 @@ def get_all_comments():
 # GET /comments/<id>: Retrieves a specific comment by its ID
 @comments_bp.get('/<int:id>')
 @jwt_required()
-def get_user_by_id(id): 
+def get_comment_by_id(id): 
     stmt    = db.select(Comment).filter_by(id=id)
     comment = db.session.scalar(stmt)
     return comment_schema.dump(comment)
@@ -32,7 +32,39 @@ def get_user_by_id(id):
 
 
 # POST /comments: Creates a new comment
+@comments_bp.post("/")
+@jwt_required()
+def create_comment():
+    try:
+        comment_data = request.get_json()
+        new_comment  = Comment(
+                              ticket_id  = comment_data.get('ticket_id'),
+                              content    = comment_data.get('content'),
+                              created_at = datetime.now(),
+                              user_id    = get_jwt_identity() 
+                              )
+        db.session.add(new_comment)
+        db.session.commit()
+
+        return comment_schema.dump(new_comment), 201
+    except ValidationError as err:
+        return {"message": "Validation Error", "errors": err.messages}, 400
 
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID
+@comments_bp.delete('/<int:id>')
+@jwt_required()
+def delete_comment(id):
+    stmt    = db.select(Comment).filter_by(id=id)
+    comment = db.session.scalar(stmt)
+    if not comment: 
+        return {"message": "Comment not found"}, 404
+
+    # user_id = get_jwt_identity()
+    # if user_id != comment.user_id:
+    #     return {"message": "Unauthorized"}, 401
+
+    db.session.delete(comment)
+    db.session.commit()
+    return {"message": "Comment deleted"}, 200
