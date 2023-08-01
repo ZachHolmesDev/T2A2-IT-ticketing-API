@@ -27,7 +27,7 @@ def get_all_tickets():
 @tickets_bp.get('/<int:id>')
 def get_ticket_by_id(id): 
     stmt   = db.select(Ticket).filter_by(id=id)
-    ticket = db.session.scalars(stmt)
+    ticket = db.session.scalar(stmt)
     return ticket_schema.dump(ticket)
 
 
