@@ -24,7 +24,7 @@ class TicketSchema(ma.Schema):
     assigned_to_user = fields.Nested('UserSchema',
                                     only=['id','name', 'email', 'role'])
     
-    comments        = fields.List(fields.Nested('CommentSchema', exclude=['ticket']))
+    comments        = fields.List(fields.Nested('CommentSchema', exclude=['ticket', 'ticket_id']))
     # for hiding feilds contextualy 
     # @post_dump(pass_many=True)
 

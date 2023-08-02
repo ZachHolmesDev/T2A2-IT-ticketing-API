@@ -2,11 +2,12 @@ from datetime import datetime
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt_identity
 from marshmallow.exceptions import ValidationError
+from sqlalchemy.exc import IntegrityError
+# from psycopg2 import IntegrityError
 from main import db
 
 # models and schemas
 from models.comment import Comment
-from schemas.user_schema import user_schema, users_schema
 from schemas.comment_schema import comment_schema, comments_schema
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/comments")
@@ -49,6 +50,9 @@ def create_comment():
         return comment_schema.dump(new_comment), 201
     except ValidationError as err:
         return {"message": "Validation Error", "errors": err.messages}, 400
+    # might need to make more descriptive but not sure about just saying no ticket incase of different integ err ? 
+    except IntegrityError as err:
+        return {"message": "IntegrityError", "errors": f'{err.orig}'}, 400
 
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
 @comments_bp.put('/<int:id>')

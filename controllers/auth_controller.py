@@ -68,7 +68,7 @@ def login():
         
         # create token with identity
         token = create_access_token(identity=str(user.id),
-                                    expires_delta=timedelta(hours=2))
+                                    expires_delta=timedelta(days=1))
         
         return {'message':f'welcome {user.name} here is your token', 
                 'token': token }
