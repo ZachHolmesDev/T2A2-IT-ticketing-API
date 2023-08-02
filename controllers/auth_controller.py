@@ -13,7 +13,13 @@ from schemas.role_schema import role_schema
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
-def register_user(user_role, **kwargas):
+
+@auth.get('/whatisaendpoint')
+def anendpoint():
+    return {'message': f'{request.endpoint}'}
+
+
+def register_user(**kwargs):
     # get body data
     new_user_request = request.get_json()
     
@@ -27,7 +33,7 @@ def register_user(user_role, **kwargas):
                                                     #                                 ).scalar_one()
         # get the id of the role by name 
         # cant figure out new request above to the right so using legacy for now
-        if request.endpoint == '/register/admin':
+        if request.endpoint == 'auth.auth_register_admin':
             # try:
             new_user_role = db.session.query(Role).filter_by(
                             role_name=new_user_request.get('role').lower()

@@ -22,11 +22,11 @@ def check_permissions_wrap(fn):
         stmt    = db.select(User).filter_by(id=user_id)
         user    = db.session.scalar(stmt)
         
-        user_role = db.session.query(Role).filter_by(id=user.role_id)
+        user_role = db.session.query(Role).filter_by(id=user.role_id).first()
         
-        if request.endpoint == '/register/admin':
-            if not user_role.can_manage_users:
-                return {'error': str(400)}, 400
+        if request.endpoint == 'auth.auth_register_admin':
+            if user_role.can_manage_users == False:
+                return {'verboten': str(404)}, 403
             # else:
             #     return
         
