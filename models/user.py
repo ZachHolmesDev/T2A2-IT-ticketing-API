@@ -9,8 +9,7 @@ class User(db.Model):
     password_hash = db.Column(db.String)
 
     role_id       = db.Column(db.Integer, db.ForeignKey('role.id'))
-    # test
-    # role = db.relationship('Role', backref)
+    
 
     created_tickets  = db.relationship("Ticket",
                                       foreign_keys   = 'Ticket.created_by_id',

@@ -11,13 +11,15 @@ jwt    = JWTManager()
 
 
 def create_app():
-
     app = Flask(__name__)
-
+   
     app.config.from_object("config.app_config")
-
     app.json.sort_keys = False
 
+    @app.errorhandler(404)
+    def not_found(err):
+        return {'error': str(err)}, 404
+    
     db.init_app(app)
     ma.init_app(app)
     bcrypt.init_app(app)

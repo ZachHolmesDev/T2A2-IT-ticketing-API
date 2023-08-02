@@ -43,9 +43,29 @@ def seed_db_logic():
     print('start seeding')
      # Create roles
     roles = [
-        Role(role_name="admin", can_view_all=True, can_manage=True, can_action=True),
-        Role(role_name="user", can_view_all=False, can_manage=False, can_action=True),
-        Role(role_name="tech", can_view_all=True, can_manage=False, can_action=True)
+        Role(role_name="admin", 
+             can_view_all       = True,
+             can_delete_all     = True,
+             can_edit_all       = True,
+             can_manage_users   = True,
+             can_manage_tickets = True,
+             can_assign_tickets = True),
+        
+        Role(role_name="tech", 
+             can_view_all       = True,
+             can_delete_all     = False,
+             can_edit_all       = True,
+             can_manage_users   = False,
+             can_manage_tickets = True,
+             can_assign_tickets = True),
+        
+        Role(role_name="user", 
+             can_view_all       = False,
+             can_delete_all     = False,
+             can_edit_all       = False,
+             can_manage_users   = False,
+             can_manage_tickets = False,
+             can_assign_tickets = False)
     ]
 
     db.session.add_all(roles)
@@ -63,25 +83,25 @@ def seed_db_logic():
             name          = 'User Meg2',
             email         = 'user1@email.com',
             password_hash = bcrypt.generate_password_hash('user1pw').decode('utf-8'),
-            role          = roles[1]
+            role          = roles[2]
         ),
         User(
             name          = 'User Bob3',
             email         = 'user2@email.com',
             password_hash = bcrypt.generate_password_hash('user2pw').decode('utf-8'),
-            role          = roles[1]
+            role          = roles[2]
         ),
         User(
             name          = 'User Caleb4',
             email         = 'user3@email.com',
             password_hash = bcrypt.generate_password_hash('user3pw').decode('utf-8'),
-            role          = roles[1]
+            role          = roles[2]
         ),
         User(
             name          = 'Tech Zach5',
             email         = 'tech_Zach@email.com',
             password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
-            role          = roles[2]
+            role          = roles[1]
         ),
         ]
 

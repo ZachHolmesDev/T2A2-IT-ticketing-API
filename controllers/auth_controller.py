@@ -1,26 +1,22 @@
 from datetime import timedelta
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from flask import Blueprint, abort, jsonify, request
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
+from helpers import check_permissions_wrap
 
 from models.user import User
 from models.role import Role
 from schemas.user_schema import user_schema
 from schemas.role_schema import role_schema
 
-
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
-
-
-# Registration:
-# POST /register: Creates a new user and returns a JWT.
-@auth.post('/register')
-def auth_register():
+def register_user(user_role, **kwargas):
     # get body data
     new_user_request = request.get_json()
+    
     # not getting not null violations for empty string so this will do for now 
     # im sure thers an issue with it so need to find a better solution
     if new_user_request.get('email') == '':
@@ -31,9 +27,15 @@ def auth_register():
                                                     #                                 ).scalar_one()
         # get the id of the role by name 
         # cant figure out new request above to the right so using legacy for now
-        new_user_role = db.session.query(Role).filter_by(
-                        role_name=new_user_request.get('role').lower()
-                        ).first().id
+        if request.endpoint == '/register/admin':
+            # try:
+            new_user_role = db.session.query(Role).filter_by(
+                            role_name=new_user_request.get('role').lower()
+                            ).first().id
+        else:
+            new_user_role = db.session.query(Role).filter_by(
+                            role_name='user'
+                            ).first().id   
     except AttributeError:
         # can be handled better i think
         return {'error': f'Role: {new_user_request.get("role")} invalid'}
@@ -54,6 +56,21 @@ def auth_register():
     except IntegrityError as err:
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return { 'error': 'Email address already in use' }, 409
+
+
+# Registration:
+# POST /register: Creates a new user and returns a JWT.
+@auth.post('/register/admin')
+@jwt_required()
+@check_permissions_wrap
+def auth_register_admin(**kwargs):
+    return register_user(**kwargs)
+
+
+# POST /register: Creates a new user and returns a JWT.
+@auth.post('/register')
+def auth_register(**kwargs):
+    return register_user(**kwargs)
 
 # Login:
 # POST /login: Checks the user credentials and returns a JWT.
