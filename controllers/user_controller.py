@@ -8,6 +8,7 @@ from helpers import check_permissions_wrap
 
 # models and schemas
 from models.user import User
+from models.role import Role
 from schemas.user_schema import user_schema, users_schema
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
@@ -36,24 +37,33 @@ def get_user_by_id(id):
 @jwt_required()
 @check_permissions_wrap
 def update_user(id, user_role):
-    if user_role.can_manage_users == False:
-        return {"message": "Forbidden"}, 403
+    # if user_role.can_manage_users == False:
+    #     return {"message": "Forbidden"}, 403
 
-    user_data = request.get_json()
+    user_data = user_schema.load(request.get_json()) # Load user data with user schema
     stmt      = db.select(User).filter_by(id=id)
     user      = db.session.scalar(stmt)
 
-    if user:
-        user.name       = user_data.get('name', user.name)
-        user.email      = user_data.get('email', user.email)
-        user.email      = user_data.get('email', user.email)
-        user.email      = user_data.get('email', user.email)
-        # Additional fields go here
-
-        db.session.commit()
-        return user_schema.dump(user)
-    else:
+    if not user:
         return {'error': f'User not found with id {id}'}, 404
+
+    if str(user.id) != get_jwt_identity() and user_role.can_manage_users == False:
+        return {'error': 'Unauthorized'}, 403
+    
+    if user:
+            user.name          = user_data.get('name') or user.name
+            user.email         = user_data.get('email') or user.email
+            user.password_hash = bcrypt.generate_password_hash(user_data.get('password')).decode('utf-8') if user_data.get('password') else user.password_hash
+            # if permission can change role else role is same
+            if user_role.can_manage_users and user_data.get('role'): 
+                new_role_id  = db.session.query(Role).filter_by(
+                    role_name=user_data.get('role').lower()).first().id
+                user.role_id = new_role_id
+            else:
+                user.role_id
+
+    db.session.commit()
+    return user_schema.dump(user)
 
 
 # DELETE /users/<id>: Deletes a specific user by its ID

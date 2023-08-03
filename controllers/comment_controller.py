@@ -62,16 +62,16 @@ def create_comment():
 @jwt_required()
 @check_permissions_wrap
 def update_comment(id, user_role):
-    body_data = comment_schema.load(request.get_json())
-    stmt      = db.select(Comment).filter_by(id=id)
-    comment   = db.session.scalar(stmt)
+    comment_data = comment_schema.load(request.get_json())
+    stmt         = db.select(Comment).filter_by(id=id)
+    comment      = db.session.scalar(stmt)
 
     if comment:
         if str(comment.user_id) != get_jwt_identity() and user_role.can_edit_all == False:
             return {'error': 'Unauthorized'}, 403
 
-        comment.ticket_id  = body_data.get('ticket_id') or comment.ticket_id
-        comment.content    = body_data.get('content') or comment.content
+        comment.ticket_id  = comment_data.get('ticket_id') or comment.ticket_id
+        comment.content    = comment_data.get('content') or comment.content
         
         db.session.commit()
         return comment_schema.dump(comment)
