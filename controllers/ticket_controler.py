@@ -59,7 +59,7 @@ def create_ticket():
 @jwt_required()
 @check_permissions_wrap
 def update_ticket(id, user_role):
-    body_data = ticket_schema.load(request.get_json())
+    ticket_data = ticket_schema.load(request.get_json())
     stmt      = db.select(Ticket).filter_by(id=id)
     ticket    = db.session.scalar(stmt)
 
@@ -67,10 +67,10 @@ def update_ticket(id, user_role):
         if str(ticket.created_by_id) != get_jwt_identity() and user_role.can_edit_all == False:
             return {'error': 'Unauthorized'}, 403
 
-        ticket.title       = body_data.get('title') or ticket.title
-        ticket.description = body_data.get('description') or ticket.description
-        ticket.priority    = body_data.get('priority') or ticket.priority
-        ticket.status      = body_data.get('status') or ticket.status
+        ticket.title       = ticket_data.get('title') or ticket.title
+        ticket.description = ticket_data.get('description') or ticket.description
+        ticket.priority    = ticket_data.get('priority') or ticket.priority
+        ticket.status      = ticket_data.get('status') or ticket.status
         ticket.updated_at  = datetime.now()
 
         db.session.commit()
