@@ -13,7 +13,7 @@ from schemas.role_schema import role_schema
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
-
+# debug
 @auth.get('/whatisaendpoint')
 def anendpoint():
     return {'message': f'{request.endpoint}'}
@@ -34,7 +34,6 @@ def register_user(**kwargs):
         # get the id of the role by name 
         # cant figure out new request above to the right so using legacy for now
         if request.endpoint == 'auth.auth_register_admin':
-            # try:
             new_user_role = db.session.query(Role).filter_by(
                             role_name=new_user_request.get('role').lower()
                             ).first().id
@@ -58,14 +57,13 @@ def register_user(**kwargs):
         db.session.add(user_to_add)
         db.session.commit()
         return user_schema.dump(user_to_add), 201
-    
     except IntegrityError as err:
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return { 'error': 'Email address already in use' }, 409
 
 
 # Registration:
-# POST /register: Creates a new user and returns a JWT.
+# POST /register: Protected endpoint that allows users with the permission can_manage_users to creates all users.
 @auth.post('/register/admin')
 @jwt_required()
 @check_permissions_wrap
@@ -73,7 +71,7 @@ def auth_register_admin(**kwargs):
     return register_user(**kwargs)
 
 
-# POST /register: Creates a new user and returns a JWT.
+# POST /register: Unprotected endpoint that allows anyonone to creates a new user.
 @auth.post('/register')
 def auth_register(**kwargs):
     return register_user(**kwargs)
@@ -94,6 +92,6 @@ def login():
                                     expires_delta=timedelta(days=1))
         
         return {'message':f'welcome {user.name} here is your token', 
-                'token': token }
+                'token'  : token }
     else:
         return { 'error': 'Invalid email or password' }, 401

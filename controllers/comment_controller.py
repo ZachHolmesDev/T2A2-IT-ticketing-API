@@ -5,6 +5,8 @@ from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
 # from psycopg2 import IntegrityError
 from main import db
+from helpers import check_permissions_wrap
+
 
 # models and schemas
 from models.comment import Comment
@@ -58,14 +60,15 @@ def create_comment():
 @comments_bp.put('/<int:id>')
 @comments_bp.patch('/<int:id>')
 @jwt_required()
-def update_comment(id):
+@check_permissions_wrap
+def update_comment(id, user_role):
     body_data = comment_schema.load(request.get_json())
     stmt      = db.select(Comment).filter_by(id=id)
     comment   = db.session.scalar(stmt)
 
     if comment:
-        if str(comment.user_id) != get_jwt_identity():
-            return {'error': 'Only the owner of the comment can edit'}, 403
+        if str(comment.user_id) != get_jwt_identity() and user_role.can_edit_all == False:
+            return {'error': 'Unauthorized'}, 403
 
         comment.ticket_id  = body_data.get('ticket_id') or comment.ticket_id
         comment.content    = body_data.get('content') or comment.content
@@ -79,15 +82,17 @@ def update_comment(id):
 # DELETE /comments/<id>: Deletes a specific comment by its ID
 @comments_bp.delete('/<int:id>')
 @jwt_required()
-def delete_comment(id):
+@check_permissions_wrap
+def delete_comment(id, user_role):
     stmt    = db.select(Comment).filter_by(id=id)
     comment = db.session.scalar(stmt)
     if not comment: 
         return {"message": "Comment not found"}, 404
 
     user_id = get_jwt_identity()
-    if user_id != str(comment.user_id):
-        return {"message": "Unauthorized"}, 401
+   
+    if user_id != str(comment.user_id) and user_role.can_delete_all == False:
+        return {"message": "Unauthorized"}, 403
 
     db.session.delete(comment)
     db.session.commit()

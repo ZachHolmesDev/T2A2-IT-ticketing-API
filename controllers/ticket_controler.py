@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, abort, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from main import db 
+from helpers import check_permissions_wrap
 
 # models and schemas
 from models.ticket import Ticket
@@ -56,14 +57,15 @@ def create_ticket():
 @tickets_bp.put('/<int:id>')
 @tickets_bp.patch('/<int:id>')
 @jwt_required()
-def update_ticket(id):
+@check_permissions_wrap
+def update_ticket(id, user_role):
     body_data = ticket_schema.load(request.get_json())
     stmt      = db.select(Ticket).filter_by(id=id)
     ticket    = db.session.scalar(stmt)
 
     if ticket:
-        if str(ticket.created_by_id) != get_jwt_identity():
-            return {'error': 'Only the creator of the ticket can edit'}, 403
+        if str(ticket.created_by_id) != get_jwt_identity() and user_role.can_edit_all == False:
+            return {'error': 'Unauthorized'}, 403
 
         ticket.title       = body_data.get('title') or ticket.title
         ticket.description = body_data.get('description') or ticket.description
@@ -79,15 +81,16 @@ def update_ticket(id):
 # DELETE /tickets/<id>: Deletes a specific ticket by its ID
 @tickets_bp.delete('/<int:id>')
 @jwt_required()
-def delete_ticket(id):
+@check_permissions_wrap
+def delete_ticket(id, user_role):
     stmt   = db.select(Ticket).filter_by(id=id)
     ticket = db.session.scalar(stmt)
     if not ticket:
         return {"message": "Ticket not found"}, 404
 
     user_id = get_jwt_identity()
-    if user_id != str(ticket.created_by_id):
-        return {"message": "Unauthorized"}, 401
+    if user_id != str(ticket.created_by_id) and user_role.can_delete_all == False:
+        return {"message": "Unauthorized"}, 403
 
     db.session.delete(ticket)
     db.session.commit()

@@ -7,13 +7,13 @@ from models.role import Role
 
 # wrapper or function ??
 # function 
-def check_permissions_func(permission):
-    # get the user 
-    user_id = get_jwt_identity()
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
+# def check_permissions_func(permission):
+#     # get the user 
+#     user_id = get_jwt_identity()
+#     stmt = db.select(User).filter_by(id=user_id)
+#     user = db.session.scalar(stmt)
 
-    user_role = db.session.query(Role).filter_by(id=user.role_id)
+#     user_role = db.session.query(Role).filter_by(id=user.role_id)
 # wrapper
 def check_permissions_wrap(fn):
     @functools.wraps(fn)
@@ -23,10 +23,10 @@ def check_permissions_wrap(fn):
         user    = db.session.scalar(stmt)
         
         user_role = db.session.query(Role).filter_by(id=user.role_id).first()
-        
+        # SHOULD move this to the route
         if request.endpoint == 'auth.auth_register_admin':
             if user_role.can_manage_users == False:
-                return {'verboten': str(404)}, 403
+                return {'Forbidden': str(403)}, 403
             # else:
             #     return
         
