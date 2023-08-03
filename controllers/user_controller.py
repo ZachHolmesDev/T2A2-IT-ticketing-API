@@ -15,6 +15,10 @@ users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 
 # GET /users: Retrieves a list of all users
+"""
+retrieves a list of all users from the database and returns it as a
+JSON response.
+"""
 @users_bp.get("/")
 @jwt_required()
 def get_all_users():
@@ -24,6 +28,15 @@ def get_all_users():
 
 
 # GET /users/<id>: Retrieves a specific user by its ID
+"""
+retrieves a specific user by its ID and returns the user data in JSON format.
+
+:param id: 
+    The `id` parameter is the unique identifier of the user that we want to retrieve. It is
+    used to filter the user records in the database and retrieve the specific user with the matching ID
+:return: 
+    The specific user with the given ID is being returned.
+"""
 @users_bp.get('/<int:id>')
 @jwt_required()
 def get_user_by_id(id): 
@@ -32,21 +45,32 @@ def get_user_by_id(id):
     return user_schema.dump(user)
 
 # PUT/PATCH /users/<id>: Updates a specific user by its ID
+"""
+This function updates a specific user by its ID, checking for permissions and validating the user
+data.
+
+:param id: 
+    The `id` parameter represents the ID of the user that needs to be updated
+:param user_role: 
+    The `user_role` parameter represents the role of the user making the request. It
+    is used to check the permissions of the user and determine if they are authorized to update the user
+    with the given ID
+:return: 
+    the updated user data in JSON format.
+"""
 @users_bp.put('/<int:id>')
 @users_bp.patch('/<int:id>')
 @jwt_required()
 @check_permissions_wrap
 def update_user(id, user_role):
-    # if user_role.can_manage_users == False:
-    #     return {"message": "Forbidden"}, 403
-
-    user_data = user_schema.load(request.get_json()) # Load user data with user schema
+    # Load user data with user schema
+    user_data = user_schema.load(request.get_json()) 
     stmt      = db.select(User).filter_by(id=id)
     user      = db.session.scalar(stmt)
-
+    # check user exists
     if not user:
         return {'error': f'User not found with id {id}'}, 404
-
+    # check permissions
     if str(user.id) != get_jwt_identity() and user_role.can_manage_users == False:
         return {'error': 'Unauthorized'}, 403
     

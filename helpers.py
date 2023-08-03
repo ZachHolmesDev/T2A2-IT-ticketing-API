@@ -7,6 +7,14 @@ from models.role import Role
 
 
 def check_permissions_wrap(fn):
+    """
+    The `check_permissions_wrap` function is a decorator that checks the permissions of a user before
+    calling the wrapped function.
+    
+    :param fn: The `fn` parameter is a function that will be wrapped by the `check_permissions_wrap`
+    decorator
+    :return: The `check_permissions_wrap` function returns a wrapper function `wrapper`.
+    """
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         # get the user from id 

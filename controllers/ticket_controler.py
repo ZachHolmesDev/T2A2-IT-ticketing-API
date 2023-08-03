@@ -53,6 +53,7 @@ def create_ticket():
     except ValidationError as err:
         return {"message": "Validation Error", "errors": err.messages}, 400
 
+
 # PUT/PATCH /tickets/<id>: Updates a specific ticket by its ID
 @tickets_bp.put('/<int:id>')
 @tickets_bp.patch('/<int:id>')
@@ -77,6 +78,7 @@ def update_ticket(id, user_role):
         return ticket_schema.dump(ticket)
     else:
         return {'error': f'Ticket not found with id {id}'}, 404
+
 
 # DELETE /tickets/<id>: Deletes a specific ticket by its ID
 @tickets_bp.delete('/<int:id>')
