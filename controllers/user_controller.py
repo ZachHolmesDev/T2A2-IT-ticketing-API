@@ -63,13 +63,16 @@ data.
 @jwt_required()
 @check_permissions_wrap
 def update_user(id, user_role):
+    
     # Load user data with user schema
     user_data = user_schema.load(request.get_json()) 
     stmt      = db.select(User).filter_by(id=id)
     user      = db.session.scalar(stmt)
+    
     # check user exists
     if not user:
         return {'error': f'User not found with id {id}'}, 404
+    
     # check permissions
     if str(user.id) != get_jwt_identity() and user_role.can_manage_users == False:
         return {'error': 'Unauthorized'}, 403
@@ -77,7 +80,8 @@ def update_user(id, user_role):
     if user:
             user.name          = user_data.get('name') or user.name
             user.email         = user_data.get('email') or user.email
-            user.password_hash = bcrypt.generate_password_hash(user_data.get('password')).decode('utf-8') if user_data.get('password') else user.password_hash
+            user.password_hash = bcrypt.generate_password_hash(user_data.get('password')).decode('utf-8') or user.password_hash
+            
             # if permission can change role else role is same
             if user_role.can_manage_users and user_data.get('role'): 
                 new_role_id  = db.session.query(Role).filter_by(

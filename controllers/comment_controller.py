@@ -67,10 +67,14 @@ def update_comment(id, user_role):
     comment      = db.session.scalar(stmt)
 
     if comment:
+        # check permissions
         if str(comment.user_id) != get_jwt_identity() and user_role.can_edit_all == False:
             return {'error': 'Unauthorized'}, 403
-
-        comment.ticket_id  = comment_data.get('ticket_id') or comment.ticket_id
+        # if permission change the comment to link to a different ticket 
+        if user_role.can_edit_all == True:
+            comment.ticket_id  = comment_data.get('ticket_id') 
+        else:
+            comment.ticket_id
         comment.content    = comment_data.get('content') or comment.content
         
         db.session.commit()
