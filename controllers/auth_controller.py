@@ -18,46 +18,45 @@ auth = Blueprint("auth", __name__, url_prefix="/auth")
 def anendpoint():
     return {'message': f'{request.endpoint}'}
 
-
 def register_user(user_role):
-    # get body data
+    # Get body data
     new_user_request = request.get_json()
-    
+
+    # Validate email address FIXME
     # not getting not null violations for empty string so this will do for now 
-    # im sure thers an issue with it so need to find a better solution
     if new_user_request.get('email') == '':
-        return { 'error': 'Email address cant be empty' }, 400
+        return {'error': 'Email address cannot be empty'}, 400
+
     try:
-                                                    # new_user_role = db.session.execute(Role).filter_by(
-                                                    #                                 role_name=new_user_request.get('role')
-                                                    #                                 ).scalar_one()
-        # get the id of the role by name 
+        # Get the role ID based on user role TODO
         # cant figure out new request above to the right so using legacy for now
-        if user_role and user_role.can_manage_users == True:
+        if user_role and user_role.can_manage_users:
             new_user_role = db.session.query(Role).filter_by(
-                            role_name=new_user_request.get('role').lower()
-                            ).first().id
-        else:
+                role_name = new_user_request.get('role').lower()).first().id
+        else: 
             new_user_role = db.session.query(Role).filter_by(
-                            role_name='user'
-                            ).first().id   
+                role_name = 'user').first().id
+    
+    # can be handled better i think ?? TODO
     except AttributeError:
-        # can be handled better i think
         return {'error': f'Role: {new_user_request.get("role")} invalid'}
-    
-    
-    user_to_add = User(name          = new_user_request.get('name'),
-                       email         = new_user_request.get('email'),
-                       password_hash = bcrypt.generate_password_hash(new_user_request.get('password')).decode('utf-8'),
-                       role_id       = new_user_role)
+
+    # Create a new user instance
+    user_to_add = User(
+        name          = new_user_request.get('name'),
+        email         = new_user_request.get('email'),
+        password_hash = bcrypt.generate_password_hash(new_user_request.get('password')).decode('utf-8'),
+        role_id       = new_user_role
+    )
+
     try:
-        # Add and Commit the new user to the database
+        # Add and commit the new user to the database
         db.session.add(user_to_add)
         db.session.commit()
         return user_schema.dump(user_to_add), 201
     except IntegrityError as err:
         if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
-            return { 'error': 'Email address already in use' }, 409
+            return {'error': 'Email address already in use'}, 409
 
 
 # Registration:
