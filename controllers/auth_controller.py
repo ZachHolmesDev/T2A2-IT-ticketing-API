@@ -19,7 +19,7 @@ def anendpoint():
     return {'message': f'{request.endpoint}'}
 
 
-def register_user(**kwargs):
+def register_user(user_role):
     # get body data
     new_user_request = request.get_json()
     
@@ -33,7 +33,7 @@ def register_user(**kwargs):
                                                     #                                 ).scalar_one()
         # get the id of the role by name 
         # cant figure out new request above to the right so using legacy for now
-        if request.endpoint == 'auth.auth_register_admin':
+        if user_role and user_role.can_manage_users == True:
             new_user_role = db.session.query(Role).filter_by(
                             role_name=new_user_request.get('role').lower()
                             ).first().id
@@ -49,9 +49,7 @@ def register_user(**kwargs):
     user_to_add = User(name          = new_user_request.get('name'),
                        email         = new_user_request.get('email'),
                        password_hash = bcrypt.generate_password_hash(new_user_request.get('password')).decode('utf-8'),
-                       role_id       = new_user_role
-                       # only an admin should be able to create new admins and techs can make other techs ?
-                    )
+                       role_id       = new_user_role)
     try:
         # Add and Commit the new user to the database
         db.session.add(user_to_add)
@@ -67,15 +65,18 @@ def register_user(**kwargs):
 @auth.post('/register/admin')
 @jwt_required()
 @check_permissions_wrap
-def auth_register_admin(**kwargs):
-    return register_user(**kwargs)
+def auth_register_admin(user_role):
+    # check permission
+    if user_role.can_manage_users == False:
+        return {'Forbidden': str(403)}, 403
+    return register_user(user_role)
 
 
 # POST /register: Unprotected endpoint that allows anyonone to creates a new user.
 @auth.post('/register')
-def auth_register(**kwargs):
-    return register_user(**kwargs)
-
+def auth_register():
+    return register_user(user_role= None)
+# role_name='user'
 # Login:
 # POST /login: Checks the user credentials and returns a JWT.
 @auth.post('/login')
