@@ -1,5 +1,5 @@
 from main import ma
-from marshmallow import fields, validate, post_dump
+from marshmallow import fields, validate, post_dump, pre_dump
 
 
 class UserSchema(ma.Schema):
@@ -15,7 +15,8 @@ class UserSchema(ma.Schema):
                   'user_role',
                   'created_tickets',
                   'assigned_tickets', 
-                  'created_comments' )
+                  'created_comments' ,
+                  'created_comments_count')
         load_only = ('password', 'role')
     
     # LOADING FEILDS
@@ -46,18 +47,44 @@ class UserSchema(ma.Schema):
     user_role = fields.Nested('RoleSchema', only=['role_name'])
 
     created_tickets  = fields.List(fields.Nested('TicketSchema', 
-                                                 exclude=['created_by_user'] ))
+                                                 exclude=['created_by_user', 'comments'] ))
     
     assigned_tickets = fields.List(fields.Nested('TicketSchema', 
-                                                 exclude=['assigned_to_user']))
+                                                 exclude=['assigned_to_user', 'comments']))
     
     created_comments = fields.List(fields.Nested('CommentSchema', 
                                                  exclude=['user']))
-    # for hiding feilds contextualy 
-    # @post_dump(pass_many=True)
-    # def show_or_hide_feilds(self, data, many):
-    #     pass
+    
+    # experiment afer finished 
+    
+    # # for hiding feilds contextualy 
+    # # @post_dump(pass_many=True)
+    # # def show_or_hide_feilds(self, data, many):
+    # #     pass
+    # # @post_dump(pass_original=True)
+    # # def add_ticket_counts(self, data, original_data, **kwargs):
+    # #     data['created_tickets_count']  = len(original_data.created_tickets)
+    # #     data['assigned_tickets_count'] = len(original_data.assigned_tickets)
+    # #     data['created_comments_count'] = len(original_data.created_comments)
+    # #     return data
+    # created_tickets_count = fields.Integer(dump_only=True)
+    # assigned_tickets_count = fields.Integer(dump_only=True)
+    # created_comments_count = fields.Integer(dump_only=True)
 
+    # @pre_dump(pass_many=True)
+    # def calculate_ticket_counts(self, data, many, **kwargs):
+    #     if many:
+    #         for user in data:
+    #             user.created_tickets_count = len(user.created_tickets)
+    #             user.assigned_tickets_count = len(user.assigned_tickets)
+    #             user.created_comments_count = len(user.created_comments)
+    #     else:
+    #         data.created_tickets_count = len(data.created_tickets)
+    #         data.assigned_tickets_count = len(data.assigned_tickets)
+    #         data.created_comments_count = len(data.created_comments)
+    #     return data 
+    
+    
 class UserListSchema(UserSchema):
     class Meta(UserSchema.Meta):
         exclude = ('password_hash', 'created_tickets', 'assigned_tickets', 'created_comments')
