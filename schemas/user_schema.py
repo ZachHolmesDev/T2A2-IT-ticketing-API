@@ -1,5 +1,5 @@
 from main import ma
-from marshmallow import fields, validate
+from marshmallow import fields, validate, post_dump
 
 
 class UserSchema(ma.Schema):
@@ -41,8 +41,8 @@ class UserSchema(ma.Schema):
     password = fields.String(required=True, 
                              validate=validate.Length(min=1, 
                              error='Password cannot be empty'))
+   
     # relations
-    
     user_role = fields.Nested('RoleSchema', only=['role_name'])
 
     created_tickets  = fields.List(fields.Nested('TicketSchema', 
@@ -55,9 +55,18 @@ class UserSchema(ma.Schema):
                                                  exclude=['user']))
     # for hiding feilds contextualy 
     # @post_dump(pass_many=True)
+    # def show_or_hide_feilds(self, data, many):
+    #     pass
+
+class UserListSchema(UserSchema):
+    class Meta(UserSchema.Meta):
+        exclude = ('password_hash', 'created_tickets', 'assigned_tickets', 'created_comments')
+
+
 
 user_schema  = UserSchema(exclude=['password_hash'])
-users_schema = UserSchema(many=True, exclude=['password_hash'   ])
+users_schema = UserSchema(many=True, exclude=['password_hash'])
+user_list_schema = UserListSchema(many=True)
 
 
     

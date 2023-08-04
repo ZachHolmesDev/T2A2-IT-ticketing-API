@@ -9,7 +9,7 @@ from helpers import check_permissions_wrap
 # models and schemas
 from models.user import User
 from models.role import Role
-from schemas.user_schema import user_schema, users_schema
+from schemas.user_schema import user_schema, users_schema, user_list_schema
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
@@ -24,7 +24,7 @@ JSON response.
 def get_all_users():
     stmt  = db.select(User)
     users = db.session.scalars(stmt)
-    return users_schema.dump(users)
+    return user_list_schema.dump(users)
 
 
 # GET /users/<id>: Retrieves a specific user by its ID
