@@ -38,20 +38,30 @@ def get_ticket_by_id(id):
 @jwt_required()
 def create_ticket():
     try:
-        ticket_data = request.get_json()
+        # Get the JSON data from the request
+        ticket_request = request.get_json()
+        # Validate the data using the ticket schema
+        ticket_data = ticket_schema.load(ticket_request, partial=True)
+
+        # Create a new ticket instance using the validated data
         new_ticket = Ticket(
-                             title          = ticket_data.get('title'),
-                             description    = ticket_data.get('description'),
-                             created_at     = datetime.now(),
-                             priority       = ticket_data.get('priority'),
-                             created_by_id  = get_jwt_identity(),
-                            )
+            title          = ticket_data.get('title'),
+            description    = ticket_data.get('description'),
+            created_at     = datetime.now(),
+            priority       = ticket_data.get('priority'),
+            status         = 'incoming',
+            created_by_id  = get_jwt_identity(),
+        )
+
+        # Add and commit the new ticket to the database
         db.session.add(new_ticket)
         db.session.commit()
 
         return ticket_schema.dump(new_ticket), 201
     except ValidationError as err:
+        # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
+
 
 
 # PUT/PATCH /tickets/<id>: Updates a specific ticket by its ID
@@ -60,24 +70,35 @@ def create_ticket():
 @jwt_required()
 @check_permissions_wrap
 def update_ticket(id, user_role):
-    ticket_data = ticket_schema.load(request.get_json())
-    stmt      = db.select(Ticket).filter_by(id=id)
-    ticket    = db.session.scalar(stmt)
+    try:
+        # Get the JSON data and validate it with the schema, allowing for partial updates
+        ticket_request = request.get_json()
+        ticket_data    = ticket_schema.load(ticket_request, partial=True)
 
-    if ticket:
-        if str(ticket.created_by_id) != get_jwt_identity() and user_role.can_edit_all == False:
-            return {'error': 'Unauthorized'}, 403
+        # Query the ticket
+        stmt   = db.select(Ticket).filter_by(id=id)
+        ticket = db.session.scalar(stmt)
 
-        ticket.title       = ticket_data.get('title') or ticket.title
-        ticket.description = ticket_data.get('description') or ticket.description
-        ticket.priority    = ticket_data.get('priority') or ticket.priority
-        ticket.status      = ticket_data.get('status') or ticket.status
-        ticket.updated_at  = datetime.now()
+        if ticket:
+            # Check permissions
+            if str(ticket.created_by_id) != get_jwt_identity() and user_role.can_edit_all == False:
+                return {'error': 'Unauthorized'}, 403
+            
+            # Update only the fields that are provided
+            ticket.title       = ticket_data.get('title', ticket.title)
+            ticket.description = ticket_data.get('description', ticket.description)
+            ticket.priority    = ticket_data.get('priority', ticket.priority)
+            ticket.status      = ticket_data.get('status', ticket.status)
+            ticket.updated_at  = datetime.now()
 
-        db.session.commit()
-        return ticket_schema.dump(ticket)
-    else:
-        return {'error': f'Ticket not found with id {id}'}, 404
+            db.session.commit()
+            return ticket_schema.dump(ticket)
+        else:
+            return {'error': f'Ticket not found with id {id}'}, 404
+    except ValidationError as err:
+        # Validation error, return 400 response
+        return {"message": "Validation Error", "errors": err.messages}, 400
+
 
 
 # DELETE /tickets/<id>: Deletes a specific ticket by its ID

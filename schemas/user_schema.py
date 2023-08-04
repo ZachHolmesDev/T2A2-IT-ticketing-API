@@ -18,16 +18,24 @@ class UserSchema(ma.Schema):
                   'created_comments' )
         load_only = ('password', 'role')
     
-    name     = fields.String(required=True, validate=validate.Length(min=1))
-    email    = fields.Email (required=True, validate=validate.Length(min=1))
+    # validation
+    name     = fields.String(required=True, 
+                             validate=validate.Length(min=1, 
+                             error='Name cannot be empty'))
+    email    = fields.Email (required=True, 
+                             validate=validate.Length(min=1, 
+                             error='Email cannot be empty & must be a valid email address'))
     # email    = fields.String(required=True, validate=validate.Regexp(
     #                             r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))
-    password = fields.String(required=True, validate=validate.Length(min=1))
-    role     = fields.String(required=True, validate=validate.Length(min=1))
-
-    
+    password = fields.String(required=True, 
+                             validate=validate.Length(min=1, 
+                             error='Password cannot be empty'))
+    role     = fields.String(required=True, 
+                             validate=validate.Length(min=1, 
+                             error='Role cannot be empty'))
+    # only for loading passwords into the schema to then be hashed and stored in the db
+    password  = fields.String()
     # relations
-    password = fields.String()
     
     user_role = fields.Nested('RoleSchema', only=['role_name'])
 

@@ -1,8 +1,8 @@
 from main import ma
-from marshmallow import fields
+from marshmallow import fields, validate, pre_load
 
-# VALID_STATUSES = ()
-# VALID_PRIORITIES = ('Low', 'Medium', 'High', 'EMERGANCY')
+VALID_STATUSES = ('incoming', 'open', 'in progress', 'on hold', 'resolved', 'closed')
+VALID_PRIORITIES = ('low', 'medium', 'high', 'emergency')
 
 class TicketSchema(ma.Schema):
     class Meta:
@@ -17,14 +17,41 @@ class TicketSchema(ma.Schema):
                   'created_by_user',
                   'assigned_to_user',
                   'comments')
+    
+    # validation
+    title       = fields.String(required=True, 
+                                validate=validate.Length(min=1, 
+                                error='Title cannot be empty'))
+    description = fields.String(required=True, 
+                                validate=validate.Length(min=1, 
+                                error='Description cannot be empty'))
+    priority    = fields.String(required=True, 
+                                validate=validate.OneOf(VALID_PRIORITIES, 
+                                error='Priority must be one of the following : ' + ', '.join(VALID_PRIORITIES)))
+    status      = fields.String(required=True, 
+                                validate=validate.OneOf(VALID_STATUSES, 
+                                error='Status must be one of the following : ' + ', '.join(VALID_STATUSES)))
+    created_at  = fields.DateTime(required=True, 
+                                error='Created_at must be a valid datetime')
+
     # display the relations
-    created_by_user = fields.Nested('UserSchema', 
+    created_by_user  = fields.Nested('UserSchema', 
                                     only=['id','name', 'email', 'user_role'])
     
     assigned_to_user = fields.Nested('UserSchema',
                                     only=['id','name', 'email', 'user_role'])
     
-    comments        = fields.List(fields.Nested('CommentSchema', exclude=['ticket', 'ticket_id']))
+    comments         = fields.List(fields.Nested('CommentSchema', exclude=['ticket', 'ticket_id']))
+    
+    # lowers the case on incoming priority and status
+    @pre_load
+    def lower_priority_and_status(self, data, **kwargs):
+        if 'priority' in data:
+            data['priority'] = data['priority'].lower()
+        if 'status' in data:
+            data['status'] = data['status'].lower()
+        return data
+    
     # for hiding feilds contextualy 
     # @post_dump(pass_many=True)
 
