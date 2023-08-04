@@ -3,6 +3,7 @@ from flask_marshmallow import Marshmallow
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from marshmallow.exceptions import ValidationError
 
 db     = SQLAlchemy()
 ma     = Marshmallow()
@@ -20,6 +21,14 @@ def create_app():
     def not_found(err):
         return {'error': str(err)}, 404
     
+    # off for now but better than nothing for edg cases ?
+    # would like to have one general error handler later but proper 
+    # validation will probbably reduce the iportance of this ?
+    
+    # @app.errorhandler(ValidationError)
+    # def validation_error(err):
+    #     return {'error': err.messages}, 400
+        
     db.init_app(app)
     ma.init_app(app)
     bcrypt.init_app(app)

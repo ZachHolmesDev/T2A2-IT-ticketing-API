@@ -62,25 +62,32 @@ def create_comment():
 @jwt_required()
 @check_permissions_wrap
 def update_comment(id, user_role):
-    comment_data = comment_schema.load(request.get_json())
-    stmt         = db.select(Comment).filter_by(id=id)
-    comment      = db.session.scalar(stmt)
+    try:
+        # Load comment schema with new comment info from the request
+        comment_data = comment_schema.load(request.get_json())
+        # find chosen comment
+        stmt         = db.select(Comment).filter_by(id=id)
+        comment      = db.session.scalar(stmt)
+        if not comment:
+            return {'error': f'Comment not found with id {id}'}, 404
 
-    if comment:
-        # check permissions
-        if str(comment.user_id) != get_jwt_identity() and user_role.can_edit_all == False:
-            return {'error': 'Unauthorized'}, 403
-        # if permission change the comment to link to a different ticket 
-        if user_role.can_edit_all == True:
-            comment.ticket_id  = comment_data.get('ticket_id') 
-        else:
-            comment.ticket_id
-        comment.content    = comment_data.get('content') or comment.content
+        if comment:
+            # check permissions
+            if str(comment.user_id) != get_jwt_identity() and user_role.can_edit_all == False:
+                return {'error': 'Unauthorized'}, 403
+            # if permission change the comment to link to a different ticket 
+            if user_role.can_edit_all == True:
+                comment.ticket_id  = comment_data.get('ticket_id') 
+            else:
+                comment.ticket_id
+            comment.content    = comment_data.get('content') or comment.content
+            
+            db.session.commit()
+            return comment_schema.dump(comment)
+    except IntegrityError as err:
+        return {"message": "IntegrityError", "errors": f'{err.orig}'}, 400
         
-        db.session.commit()
-        return comment_schema.dump(comment)
-    else:
-        return {'error': f'Comment not found with id {id}'}, 404
+        
 
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID
