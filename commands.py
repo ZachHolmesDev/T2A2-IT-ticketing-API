@@ -74,34 +74,34 @@ def seed_db_logic():
     # Create users
     users = [
         User(
-            name          = 'Admin1',
+            name          = 'Admin_id_1',
             email         = 'admin@admin.com',
             password_hash = bcrypt.generate_password_hash('admin123').decode('utf-8'),
-            role          = roles[0]
+            role_id          = roles[0].id
         ),
         User(
-            name          = 'User Meg2',
-            email         = 'user1@email.com',
-            password_hash = bcrypt.generate_password_hash('user1pw').decode('utf-8'),
-            role          = roles[2]
-        ),
-        User(
-            name          = 'User Bob3',
-            email         = 'user2@email.com',
-            password_hash = bcrypt.generate_password_hash('user2pw').decode('utf-8'),
-            role          = roles[2]
-        ),
-        User(
-            name          = 'User Caleb4',
-            email         = 'user3@email.com',
-            password_hash = bcrypt.generate_password_hash('user3pw').decode('utf-8'),
-            role          = roles[2]
-        ),
-        User(
-            name          = 'Tech Zach5',
+            name          = 'Tech Zach_id_2',
             email         = 'tech_Zach@email.com',
             password_hash = bcrypt.generate_password_hash('techpw').decode('utf-8'),
-            role          = roles[1]
+            role_id          = roles[1].id
+        ),
+        User(
+            name          = 'User Meg_id_3',
+            email         = 'MEG@email.com',
+            password_hash = bcrypt.generate_password_hash('user1pw').decode('utf-8'),
+            role_id          = roles[2].id
+        ),
+        User(
+            name          = 'User Bob_id_4',
+            email         = 'BOB@email.com',
+            password_hash = bcrypt.generate_password_hash('user2pw').decode('utf-8'),
+            role_id          = roles[2].id
+        ),
+        User(
+            name          = 'User Caleb_id_5',
+            email         = 'CALEB@email.com',
+            password_hash = bcrypt.generate_password_hash('user3pw').decode('utf-8'),
+            role_id          = roles[2].id
         ),
         ]
 
