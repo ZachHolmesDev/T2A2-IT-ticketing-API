@@ -4,14 +4,14 @@ from main import db
 class Ticket(db.Model):
     __tablename__ = 'tickets'
     id          = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title       = db.Column(db.String)
-    description = db.Column(db.Text)
-    created_at  = db.Column(db.DateTime)
+    title       = db.Column(db.String, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    created_at  = db.Column(db.DateTime, nullable=False)
     updated_at  = db.Column(db.DateTime)
     priority    = db.Column(db.String)
     status      = db.Column(db.String)
-    # foeiren keys
-    created_by_id  = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # foreign keys
+    created_by_id  = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     assigned_to_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # relationship

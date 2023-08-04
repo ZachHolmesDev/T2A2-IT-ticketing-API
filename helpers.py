@@ -24,7 +24,7 @@ def check_permissions_wrap(fn):
         # Check if user is None
         # important for edge case of a user with a valid token carrying a user id that is no longer in the db
         if user is None:
-            return {'error': 'User not found'}, 404
+            return {'error': 'Token is valid but your User not found in database'}, 404
         # get the role of the user, includes all the permissions 
         user_role = db.session.query(Role).filter_by(id=user.role_id).first()
 

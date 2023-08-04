@@ -1,5 +1,5 @@
 from main import ma
-from marshmallow import fields
+from marshmallow import fields, validate
 
 
 class UserSchema(ma.Schema):
@@ -17,6 +17,14 @@ class UserSchema(ma.Schema):
                   'assigned_tickets', 
                   'created_comments' )
         load_only = ('password', 'role')
+    
+    name     = fields.String(required=True, validate=validate.Length(min=1))
+    email    = fields.Email (required=True, validate=validate.Length(min=1))
+    # email    = fields.String(required=True, validate=validate.Regexp(
+    #                             r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))
+    password = fields.String(required=True, validate=validate.Length(min=1))
+    role     = fields.String(required=True, validate=validate.Length(min=1))
+
     
     # relations
     password = fields.String()

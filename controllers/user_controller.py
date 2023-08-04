@@ -64,8 +64,9 @@ data.
 @check_permissions_wrap
 def update_user(id, user_role):
     try:
-        # Load user schema with new user info from the request
-        user_data = user_schema.load(request.get_json())
+        #  Get the JSON data and validate it with the schema
+        # partial=True for only updating certain feilds
+        user_data = user_schema.load(request.get_json(), partial=True)
         
         # find the chosen user
         stmt = db.select(User).filter_by(id=id)
