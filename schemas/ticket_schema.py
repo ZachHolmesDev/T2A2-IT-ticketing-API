@@ -6,6 +6,8 @@ VALID_PRIORITIES = ('low', 'medium', 'high', 'emergency')
 
 class TicketSchema(ma.Schema):
     class Meta:
+        # feilds to expose
+        ordered = True
         fields = ('id', 
                   'title', 
                   'description', 
@@ -16,9 +18,14 @@ class TicketSchema(ma.Schema):
                   'user_id', 
                   'created_by_user',
                   'assigned_to_user',
+                  'assigned_to_user_id', # for loading only
                   'comments')
+    # FOR LOADING
+    assigned_to_user_id = fields.Int(required=True, 
+                                validate=validate.Range(min=1, 
+                                error='Cant assign with an empty id'))
     
-    # validation
+    # VALIDATION
     title       = fields.String(required=True, 
                                 validate=validate.Length(min=1, 
                                 error='Title cannot be empty'))

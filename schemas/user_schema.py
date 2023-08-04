@@ -3,8 +3,8 @@ from marshmallow import fields, validate
 
 
 class UserSchema(ma.Schema):
-    # feilds to expose
     class Meta: 
+        # feilds to expose
         ordered = True
         fields = ('id', 
                   'name', 
@@ -18,6 +18,17 @@ class UserSchema(ma.Schema):
                   'created_comments' )
         load_only = ('password', 'role')
     
+    # LOADING FEILDS
+    # only for loading name of role so it can be searched for by name
+                # TODO should be changed to oneof ???
+                # might requrire rework of other things 
+                # by this point but will probably simplify the logic 
+    role     = fields.String(required=True, 
+                             validate=validate.Length(min=1, 
+                             error='Role cannot be empty'))
+    # only for loading passwords into the schema to then be hashed and stored in the db
+    password  = fields.String()
+    
     # validation
     name     = fields.String(required=True, 
                              validate=validate.Length(min=1, 
@@ -30,11 +41,6 @@ class UserSchema(ma.Schema):
     password = fields.String(required=True, 
                              validate=validate.Length(min=1, 
                              error='Password cannot be empty'))
-    role     = fields.String(required=True, 
-                             validate=validate.Length(min=1, 
-                             error='Role cannot be empty'))
-    # only for loading passwords into the schema to then be hashed and stored in the db
-    password  = fields.String()
     # relations
     
     user_role = fields.Nested('RoleSchema', only=['role_name'])

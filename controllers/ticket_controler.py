@@ -51,8 +51,7 @@ def create_ticket():
             priority       = ticket_data.get('priority'),
             status         = 'incoming',
             created_by_id  = get_jwt_identity(),
-        )
-
+            )
         # Add and commit the new ticket to the database
         db.session.add(new_ticket)
         db.session.commit()
@@ -85,10 +84,13 @@ def update_ticket(id, user_role):
                 return {'error': 'Unauthorized'}, 403
             
             # Update only the fields that are provided
-            ticket.title       = ticket_data.get('title', ticket.title)
-            ticket.description = ticket_data.get('description', ticket.description)
-            ticket.priority    = ticket_data.get('priority', ticket.priority)
-            ticket.status      = ticket_data.get('status', ticket.status)
+            ticket.title       = ticket_data.get('title')       or ticket.title
+            ticket.description = ticket_data.get('description') or ticket.description
+            ticket.priority    = ticket_data.get('priority')    or ticket.priority
+
+            if user_role.can_edit_all == True or user_role.can_manage_tickets == True:
+                ticket.status = ticket_data.get('status') or ticket.status
+                ticket.assigned_to_id = ticket_data.get('assigned_to_user_id') or ticket.assigned_to_id
             ticket.updated_at  = datetime.now()
 
             db.session.commit()

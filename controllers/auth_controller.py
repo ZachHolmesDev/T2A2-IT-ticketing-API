@@ -85,6 +85,17 @@ def register_user(user_role):
 
 
 # Registration:   #TODO Route now redundunt ?? due to proper permission imlementation 
+                  # will change to make more sense if i get other stuff done in time
+    """
+    The function `auth_register_admin` is a protected endpoint that allows users with the permission
+    `can_manage_users` to create all users.
+    
+    :param user_role: 
+        The user_role parameter represents the role of the user making the request. It is
+        used to check if the user has the necessary permission (can_manage_users) to create new users
+    :return: 
+        The function `auth_register_admin` is returning the result of the `register_user` function.
+    """
 # POST /register: Protected endpoint that allows users with the permission can_manage_users to creates all users.
 @auth.post('/register/admin')
 @jwt_required()
@@ -137,3 +148,15 @@ def login():
                 'token'  : token }
     else:
         return { 'error': 'Invalid email or password' }, 401
+    
+
+# Role: 
+# POST /role: Allows an admin create new roles with whatever permissions required
+@auth.post('/role')
+def create_role():
+    pass
+# PATCH/PUT /role: Allows an admin to configure permissions as they require
+@auth.put('/role')
+@auth.patch('/role')
+def edit_role():
+    pass
