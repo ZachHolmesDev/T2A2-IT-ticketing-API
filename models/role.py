@@ -14,4 +14,4 @@ class Role(db.Model):
     can_assign_tickets  = db.Column(db.Boolean)
 
     # relationship
-    users = db.relationship("User", backref="role")
+    users = db.relationship("User", backref="user_role")

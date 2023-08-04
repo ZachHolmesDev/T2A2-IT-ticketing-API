@@ -9,18 +9,19 @@ class UserSchema(ma.Schema):
         fields = ('id', 
                   'name', 
                   'email', 
-                  'password', # for loading only
+                  'password', # for loading incoming passwords only
                   'password_hash',
-                  'role',
+                  'role', # for loading incoming role names only
+                  'user_role',
                   'created_tickets',
                   'assigned_tickets', 
                   'created_comments' )
-        load_only = ('password')
+        load_only = ('password', 'role')
     
     # relations
     password = fields.String()
     
-    role = fields.Nested('RoleSchema', only=['role_name'])
+    user_role = fields.Nested('RoleSchema', only=['role_name'])
 
     created_tickets  = fields.List(fields.Nested('TicketSchema', 
                                                  exclude=['created_by_user'] ))
