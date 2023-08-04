@@ -77,7 +77,7 @@ def update_comment(id, user_role):
                 return {'error': 'Unauthorized'}, 403
             # if permission change the comment to link to a different ticket 
             if user_role.can_edit_all == True:
-                comment.ticket_id  = comment_data.get('ticket_id') 
+                comment.ticket_id  = comment_data.get('ticket_id')  or comment.ticket_id
             else:
                 comment.ticket_id
             comment.content    = comment_data.get('content') or comment.content
