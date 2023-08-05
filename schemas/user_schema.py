@@ -84,16 +84,8 @@ class UserSchema(ma.Schema):
     #         data.created_comments_count = len(data.created_comments)
     #     return data 
     
-    
-class UserListSchema(UserSchema):
-    class Meta(UserSchema.Meta):
-        exclude = ('password_hash', 'created_tickets', 'assigned_tickets', 'created_comments')
-
-
 
 user_schema  = UserSchema(exclude=['password_hash'])
-users_schema = UserSchema(many=True, exclude=['password_hash'])
-user_list_schema = UserListSchema(many=True)
-
+users_schema = UserSchema(many=True, exclude=['password_hash', 'created_tickets', 'assigned_tickets', 'created_comments'])
 
     

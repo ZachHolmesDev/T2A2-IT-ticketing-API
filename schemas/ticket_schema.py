@@ -64,4 +64,4 @@ class TicketSchema(ma.Schema):
 
 
 ticket_schema = TicketSchema()
-tickets_schema = TicketSchema(many=True)
+tickets_schema = TicketSchema(many=True, exclude=['comments'])

@@ -150,6 +150,8 @@ def login():
         return { 'error': 'Invalid email or password' }, 401
     
 
+
+# TODO should have its own route probbably ? or just on the admin rout that is probably irelevant anyway ?
 # # Role: 
 # # POST /role: Allows an admin create new roles with whatever permissions required
 # @auth.post('/role')
