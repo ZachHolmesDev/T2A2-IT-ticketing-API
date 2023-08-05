@@ -63,7 +63,6 @@ adding it to the database.
 """
 @tickets_bp.post("/")
 @jwt_required_and_user_exists
-@jwt_required_and_user_exists
 def create_ticket():
     try:
         # Get the JSON data from the request
@@ -109,6 +108,7 @@ the ticket fields.
 """
 @tickets_bp.put('/<int:id>')
 @tickets_bp.patch('/<int:id>')
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def update_ticket(id, user_role):
     try:
@@ -139,6 +139,9 @@ def update_ticket(id, user_role):
             return ticket_schema.dump(ticket)
         else:
             return {'error': f'Ticket not found with id {id}'}, 404
+    except ValidationError as err:
+        # Validation error, return 400 response
+        return {"message": "Validation Error", "errors": err.messages}, 400
     except ValidationError as err:
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
