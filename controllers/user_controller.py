@@ -100,6 +100,21 @@ def update_user(id, user_role):
         
 
 # DELETE /users/<id>: Deletes a specific user by its ID
+"""
+deletes a specific user by its ID, but only if the user making the request has the
+necessary permissions.
+
+:param id: 
+    The `id` parameter represents the ID of the user that needs to be deleted
+:param user_role: 
+    The `user_role` parameter represents the role of the authenticated user making the
+    request. It is used to check if the user has the necessary permissions to delete a user
+:return: 
+    a JSON response with a message indicating the result of the delete operation. If the user
+    is successfully deleted, the response will have a status code of 200 and a message of "User
+    deleted". If the user is not found, the response will have a status code of 404 and a message of
+    "User not found". If the user does not have the necessary permissions to delete
+"""
 @users_bp.delete('/<int:id>')
 @jwt_required_and_user_exists
 @check_permissions_wrap

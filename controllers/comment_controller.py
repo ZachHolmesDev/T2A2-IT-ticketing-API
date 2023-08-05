@@ -16,6 +16,13 @@ comments_bp = Blueprint("comments", __name__, url_prefix="/comments")
 
 
 # GET /comments: Retrieves a list of all comments
+"""
+retrieves a list of all comments from the database and returns them
+as a JSON response.
+
+:return: 
+    a list of all comments.
+"""
 @comments_bp.get("/")
 @jwt_required_and_user_exists
 def get_all_comments(): 
@@ -25,6 +32,15 @@ def get_all_comments():
 
 
 # GET /comments/<id>: Retrieves a specific comment by its ID
+"""
+The function retrieves a specific comment by its ID and returns it as a JSON response.
+
+:param id: 
+    The `id` parameter is the unique identifier of the comment that you want to retrieve. It
+    is used to filter the comments and retrieve the specific comment with the matching ID
+:return: 
+    The specific comment with the given ID is being returned.
+"""
 @comments_bp.get('/<int:id>')
 @jwt_required_and_user_exists
 def get_comment_by_id(id): 
@@ -35,6 +51,17 @@ def get_comment_by_id(id):
 
 
 # POST /comments: Creates a new comment
+"""
+creates a new comment by validating the request data, creating a new comment instance,
+and adding it to the database.
+
+:return: 
+    The code is returning the newly created comment in JSON format along with a status code of
+    201 (indicating a successful creation). If there is a validation error, it returns a JSON response
+    with a message indicating the validation error and the specific validation errors. If there is an
+    integrity error (such as missing required fields), it returns a JSON response with a message
+    indicating the integrity error and the specific error
+"""
 @comments_bp.post("/")
 @jwt_required_and_user_exists
 def create_comment():
@@ -59,12 +86,26 @@ def create_comment():
     except ValidationError as err:
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
-    # Might need to make more descriptive, but not sure about just saying no ticket in case of different integrity error
     except IntegrityError as err:
-        return {"message": "IntegrityError, you may be trying to post a comment without a ticket ID", "errors": f'{err.orig}'}, 400
+        return {"message": "IntegrityError make sure your include a ticket id and content", "errors": f'{err.orig}'}, 400
 
 
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
+"""
+The `update_comment` function updates a specific comment by its ID, allowing the user to change the
+comment's content and link it to a different ticket if they have the necessary permissions.
+
+:param id: 
+    The ID of the comment that needs to be updated
+:param user_role: 
+    The `user_role` parameter represents the role of the user making the request. It
+    is used to check the user's permissions and determine if they are authorized to update the comment
+:return: 
+    The code is returning the updated comment in JSON format if the update is successful. If
+    there is a validation error, it returns a 400 response with the validation error messages. If there
+    is an integrity error, it returns a 400 response with an error message indicating that a ticket ID
+    and content should be included.
+"""
 @comments_bp.put('/<int:id>')
 @comments_bp.patch('/<int:id>')
 @jwt_required_and_user_exists
@@ -98,10 +139,25 @@ def update_comment(id, user_role):
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
     except IntegrityError as err:
-        return {"message": "IntegrityError", "errors": f'{err.orig}'}, 400
+        return {"message": "IntegrityError make sure your include a ticket id and content", "errors": f'{err.orig}'}, 400
 
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID
+"""
+deletes a specific comment by its ID, after checking if the user has
+the necessary permissions.
+
+:param id: 
+    The `id` parameter represents the ID of the comment that needs to be deleted
+:param user_role: 
+    The `user_role` parameter represents the role of the user making the request. It
+    is used to check if the user has the necessary permissions to delete the comment
+:return: 
+    a JSON response with a message indicating the result of the deletion. If the comment is
+    successfully deleted, the message will be "Comment deleted" with a status code of 200. If the
+    comment is not found, the message will be "Comment not found" with a status code of 404. If the user
+    is unauthorized to delete the comment, the message will be "Unauthorized
+"""
 @comments_bp.delete('/<int:id>')
 @jwt_required_and_user_exists
 @check_permissions_wrap

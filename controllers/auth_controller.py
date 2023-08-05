@@ -86,16 +86,16 @@ def register_user(user_role):
 
 # Registration:   #TODO Route now redundunt ?? due to proper permission imlementation 
                   # will change to make more sense if i get other stuff done in time
-    """
-    The function `auth_register_admin` is a protected endpoint that allows users with the permission
-    `can_manage_users` to create all users.
-    
-    :param user_role: 
-        The user_role parameter represents the role of the user making the request. It is
-        used to check if the user has the necessary permission (can_manage_users) to create new users
-    :return: 
-        The function `auth_register_admin` is returning the result of the `register_user` function.
-    """
+"""
+The function `auth_register_admin` is a protected endpoint that allows users with the permission
+`can_manage_users` to create all users.
+
+:param user_role: 
+    The user_role parameter represents the role of the user making the request. It is
+    used to check if the user has the necessary permission (can_manage_users) to create new users
+:return: 
+    The function `auth_register_admin` is returning the result of the `register_user` function.
+"""
 # POST /register: Protected endpoint that allows users with the permission can_manage_users to creates all users.
 @auth.post('/register/admin')
 @jwt_required_and_user_exists
@@ -108,13 +108,13 @@ def auth_register_admin(user_role):
 
 
 # POST /register:
-    """
-    An unprotected endpoint that allows anyone to create a new user.
-    
-    :return: 
-        The function `auth_register` is returning the result of the `register_user` function call
-        with the `user_role` parameter set to `None`.
-    """
+"""
+An unprotected endpoint that allows anyone to create a new user.
+
+:return: 
+    The function `auth_register` is returning the result of the `register_user` function call
+    with the `user_role` parameter set to `None`.
+"""
 @auth.post('/register')
 def auth_register():
     return register_user(user_role= None)

@@ -4,6 +4,8 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from marshmallow.exceptions import ValidationError
+from sqlalchemy.exc import IntegrityError
+
 
 db     = SQLAlchemy()
 ma     = Marshmallow()
@@ -21,14 +23,18 @@ def create_app():
     def not_found(err):
         return {'error': str(err)}, 404
     
-    
     @app.errorhandler(ValidationError)
     def validation_error(err):
-        return {'error': err.messages}, 400
+        return {"message": "Validation Error", "errors": err.messages}, 400
+   
+    @app.errorhandler(IntegrityError)
+    def integrity_error(err):
+        return {"message": "Integrity Error",'error': f'{err.orig}'}, 400
     
-    # @app.errorhandler(Exception)
-    # def exception_error(err):
-    #     return {'error': err.messages}, 400
+    @app.errorhandler(Exception)
+    def exception_error(err):
+        return {'error': err.messages}, 400
+       
         
     db.init_app(app)
     ma.init_app(app)
