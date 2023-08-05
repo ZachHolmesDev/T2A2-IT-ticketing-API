@@ -4,3 +4,7 @@ __pycache__
 .env
 .flaskenv
 holding
+node_modules
+tmp
+appmap.yml
+sql_warning.txt

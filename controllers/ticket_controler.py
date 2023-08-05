@@ -2,8 +2,9 @@ from datetime import datetime
 from flask import Blueprint, jsonify, abort, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
+from sqlalchemy.exc import IntegrityError
 from main import db 
-from helpers import check_permissions_wrap
+from helpers import check_permissions_wrap, jwt_required_and_user_exists, jwt_required_and_user_exists
 
 # models and schemas
 from models.ticket import Ticket
@@ -15,7 +16,7 @@ tickets_bp = Blueprint("tickets", __name__, url_prefix="/tickets")
 
 # GET /tickets: Retrieves a list of all tickets
 @tickets_bp.get("/")
-@jwt_required()
+@jwt_required_and_user_exists
 def get_all_tickets():
     tickets_query = db.select(Ticket)
     tickets       = db.session.scalars(tickets_query)
@@ -24,7 +25,7 @@ def get_all_tickets():
     
 # GET /tickets/<id>: Retrieves a specific ticket by its ID
 @tickets_bp.get('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 def get_ticket_by_id(id): 
     stmt   = db.select(Ticket).filter_by(id=id)
     ticket = db.session.scalar(stmt)
@@ -35,7 +36,8 @@ def get_ticket_by_id(id):
 
 # POST /tickets: Creates a new ticket
 @tickets_bp.post("/")
-@jwt_required()
+@jwt_required_and_user_exists
+@jwt_required_and_user_exists
 def create_ticket():
     try:
         # Get the JSON data from the request
@@ -58,15 +60,14 @@ def create_ticket():
 
         return ticket_schema.dump(new_ticket), 201
     except ValidationError as err:
-        # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
-
+    except IntegrityError as err:
+        return {"message": "Integrity Error, Bad request, NOTE to create a ticket you must provide Title, description and priority.  Check error for more info", "errors": f'{err.orig}'}, 400
 
 
 # PUT/PATCH /tickets/<id>: Updates a specific ticket by its ID
 @tickets_bp.put('/<int:id>')
 @tickets_bp.patch('/<int:id>')
-@jwt_required()
 @check_permissions_wrap
 def update_ticket(id, user_role):
     try:
@@ -89,7 +90,7 @@ def update_ticket(id, user_role):
             ticket.priority    = ticket_data.get('priority')    or ticket.priority
 
             if user_role.can_edit_all == True or user_role.can_manage_tickets == True:
-                ticket.status = ticket_data.get('status') or ticket.status
+                ticket.status         = ticket_data.get('status') or ticket.status
                 ticket.assigned_to_id = ticket_data.get('assigned_to_user_id') or ticket.assigned_to_id
             ticket.updated_at  = datetime.now()
 
@@ -105,7 +106,7 @@ def update_ticket(id, user_role):
 
 # DELETE /tickets/<id>: Deletes a specific ticket by its ID
 @tickets_bp.delete('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def delete_ticket(id, user_role):
     stmt   = db.select(Ticket).filter_by(id=id)

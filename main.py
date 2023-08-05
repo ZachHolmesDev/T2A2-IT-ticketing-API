@@ -25,6 +25,10 @@ def create_app():
     @app.errorhandler(ValidationError)
     def validation_error(err):
         return {'error': err.messages}, 400
+    
+    # @app.errorhandler(Exception)
+    # def exception_error(err):
+    #     return {'error': err.messages}, 400
         
     db.init_app(app)
     ma.init_app(app)

@@ -4,7 +4,7 @@ from flask import Blueprint, abort, jsonify, request
 from main import db, bcrypt
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
-from helpers import check_permissions_wrap
+from helpers import check_permissions_wrap, jwt_required_and_user_exists
 from marshmallow.exceptions import ValidationError
 
 
@@ -16,9 +16,9 @@ from schemas.role_schema import role_schema
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 # debug
-@auth.get('/whatisaendpoint')
-def anendpoint():
-    return {'message': f'{request.endpoint}'}
+# @auth.get('/whatisaendpoint')
+# def anendpoint():
+#     return {'message': f'{request.endpoint}'}
 
 
 def register_user(user_role):
@@ -98,7 +98,7 @@ def register_user(user_role):
     """
 # POST /register: Protected endpoint that allows users with the permission can_manage_users to creates all users.
 @auth.post('/register/admin')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def auth_register_admin(user_role):
     # check permission
@@ -150,13 +150,13 @@ def login():
         return { 'error': 'Invalid email or password' }, 401
     
 
-# Role: 
-# POST /role: Allows an admin create new roles with whatever permissions required
-@auth.post('/role')
-def create_role():
-    pass
-# PATCH/PUT /role: Allows an admin to configure permissions as they require
-@auth.put('/role')
-@auth.patch('/role')
-def edit_role():
-    pass
+# # Role: 
+# # POST /role: Allows an admin create new roles with whatever permissions required
+# @auth.post('/role')
+# def create_role():
+#     pass
+# # PATCH/PUT /role: Allows an admin to configure permissions as they require
+# @auth.put('/role')
+# @auth.patch('/role')
+# def edit_role():
+#     pass

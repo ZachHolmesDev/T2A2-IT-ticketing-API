@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, abort, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from main import db, bcrypt
-from helpers import check_permissions_wrap
+from helpers import check_permissions_wrap, jwt_required_and_user_exists
 
 
 # models and schemas
@@ -20,7 +20,7 @@ retrieves a list of all users from the database and returns it as a
 JSON response.
 """
 @users_bp.get("/")
-@jwt_required()
+@jwt_required_and_user_exists
 def get_all_users():
     stmt  = db.select(User)
     users = db.session.scalars(stmt)
@@ -38,7 +38,7 @@ retrieves a specific user by its ID and returns the user data in JSON format.
     The specific user with the given ID is being returned.
 """
 @users_bp.get('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 def get_user_by_id(id): 
     stmt = db.select(User).filter_by(id=id)
     user = db.session.scalar(stmt)
@@ -60,7 +60,7 @@ data.
 """
 @users_bp.put('/<int:id>')
 @users_bp.patch('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def update_user(id, user_role):
     try:
@@ -101,7 +101,7 @@ def update_user(id, user_role):
 
 # DELETE /users/<id>: Deletes a specific user by its ID
 @users_bp.delete('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def delete_user(id, user_role):
     if user_role.can_manage_users == False:

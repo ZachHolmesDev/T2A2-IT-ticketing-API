@@ -3,9 +3,9 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 from sqlalchemy.exc import IntegrityError
-# from psycopg2 import IntegrityError
 from main import db
-from helpers import check_permissions_wrap
+from helpers import check_permissions_wrap, jwt_required_and_user_exists, jwt_required_and_user_exists
+
 
 
 # models and schemas
@@ -17,7 +17,7 @@ comments_bp = Blueprint("comments", __name__, url_prefix="/comments")
 
 # GET /comments: Retrieves a list of all comments
 @comments_bp.get("/")
-@jwt_required()
+@jwt_required_and_user_exists
 def get_all_comments(): 
     stmt     = db.select(Comment)
     comments = db.session.scalars(stmt)
@@ -26,7 +26,7 @@ def get_all_comments():
 
 # GET /comments/<id>: Retrieves a specific comment by its ID
 @comments_bp.get('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 def get_comment_by_id(id): 
     stmt    = db.select(Comment).filter_by(id=id)
     comment = db.session.scalar(stmt)
@@ -36,7 +36,7 @@ def get_comment_by_id(id):
 
 # POST /comments: Creates a new comment
 @comments_bp.post("/")
-@jwt_required()
+@jwt_required_and_user_exists
 def create_comment():
     try:
         # Get the JSON data from the request
@@ -67,7 +67,7 @@ def create_comment():
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
 @comments_bp.put('/<int:id>')
 @comments_bp.patch('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def update_comment(id, user_role):
     try:
@@ -103,7 +103,7 @@ def update_comment(id, user_role):
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID
 @comments_bp.delete('/<int:id>')
-@jwt_required()
+@jwt_required_and_user_exists
 @check_permissions_wrap
 def delete_comment(id, user_role):
     stmt    = db.select(Comment).filter_by(id=id)
