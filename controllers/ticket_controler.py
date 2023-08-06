@@ -119,6 +119,9 @@ def update_ticket(id, user_role):
         # Query the ticket
         stmt   = db.select(Ticket).filter_by(id=id)
         ticket = db.session.scalar(stmt)
+        
+        if not ticket:
+            return {'error': f'Ticket not found with id {id}'}, 404
 
         if ticket:
             # Check permissions
@@ -137,11 +140,6 @@ def update_ticket(id, user_role):
 
             db.session.commit()
             return ticket_schema.dump(ticket)
-        else:
-            return {'error': f'Ticket not found with id {id}'}, 404
-    except ValidationError as err:
-        # Validation error, return 400 response
-        return {"message": "Validation Error", "errors": err.messages}, 400
     except ValidationError as err:
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400

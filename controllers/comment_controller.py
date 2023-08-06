@@ -46,6 +46,8 @@ The function retrieves a specific comment by its ID and returns it as a JSON res
 def get_comment_by_id(id): 
     stmt    = db.select(Comment).filter_by(id=id)
     comment = db.session.scalar(stmt)
+    if not comment:
+        return {'error': f'Comment not found with id {id}'}, 404
     return comment_schema.dump(comment)
 
 
@@ -87,7 +89,7 @@ def create_comment():
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
     except IntegrityError as err:
-        return {"message": "IntegrityError make sure your include a ticket id and content", "errors": f'{err.orig}'}, 400
+        return {"message": "IntegrityError make sure you include a VALID ticket id that EXISTS and content", "errors": f'{err.orig}'}, 400
 
 
 # PUT/PATCH /comments/<id>: Updates a specific comment by its ID
@@ -139,7 +141,7 @@ def update_comment(id, user_role):
         # Validation error, return 400 response
         return {"message": "Validation Error", "errors": err.messages}, 400
     except IntegrityError as err:
-        return {"message": "IntegrityError make sure your include a ticket id and content", "errors": f'{err.orig}'}, 400
+        return {"message": "IntegrityError make sure you include a VALID ticket id that EXISTS and content", "errors": f'{err.orig}'}, 400
 
 
 # DELETE /comments/<id>: Deletes a specific comment by its ID

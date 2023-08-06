@@ -42,6 +42,8 @@ retrieves a specific user by its ID and returns the user data in JSON format.
 def get_user_by_id(id): 
     stmt = db.select(User).filter_by(id=id)
     user = db.session.scalar(stmt)
+    if not user:
+        return {'error': f'User not found with id {id}'}, 404
     return user_schema.dump(user)
 
 # PUT/PATCH /users/<id>: Updates a specific user by its ID
