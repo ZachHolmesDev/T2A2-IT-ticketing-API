@@ -30,6 +30,7 @@ class UserSchema(ma.Schema):
     # only for loading passwords into the schema to then be hashed and stored in the db
     password  = fields.String()
     
+    
     # validation
     name     = fields.String(required=True, 
                              validate=validate.Length(min=1, 

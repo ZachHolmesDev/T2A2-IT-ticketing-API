@@ -31,9 +31,13 @@ def create_app():
     def integrity_error(err):
         return {"message": "Integrity Error",'error': f'{err.orig}'}, 400
     
+    @app.errorhandler(500)
+    def server_error(err):
+        return {'error': str(err)}, 500
+
     @app.errorhandler(Exception)
     def exception_error(err):
-        return {'error': err.messages}, 400
+        return {'error': str(err)}, 400
        
         
     db.init_app(app)

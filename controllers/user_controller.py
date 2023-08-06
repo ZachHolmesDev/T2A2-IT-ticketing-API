@@ -83,16 +83,26 @@ def update_user(id, user_role):
         # change fields of chosen user
         user.name = user_data.get('name') or user.name
         user.email = user_data.get('email') or user.email
+        
         # if user give a password in the request hash and store hash
         if user_data.get('password'):
             user.password_hash = bcrypt.generate_password_hash(user_data.get('password')).decode('utf-8')
-        # if permission can change role else role is the same
+       
+        # Check if the user role is present and permission to manage users, 
+        # and get the role name from the request if so
         if user_role.can_manage_users and user_data.get('role'):
-            # finds id of role by selecting using the role name provided by the user
-            new_role_id = db.session.query(Role).filter_by(
-                role_name=user_data.get('role').lower()).first().id
+            
+            # get the role name from the request
+            role_name     = user_data.get('role').lower()
+            
+            # Query the database for the role with the given name
+            new_user_role = db.session.query(Role).filter_by(role_name=role_name).first()
+            if not new_user_role:
+                return {'error': f'Role "{user_data.get("role").lower()}" not found'}, 400
+            new_role_id  = new_user_role.id
             user.role_id = new_role_id
-
+        
+        # commit changes to database
         db.session.commit()
         return user_schema.dump(user)
     except ValidationError as err:

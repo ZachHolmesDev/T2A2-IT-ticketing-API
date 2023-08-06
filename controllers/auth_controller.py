@@ -49,9 +49,12 @@ def register_user(user_role):
         # Check if the user role is present and permission to manage users, 
         # and get the role name from the request if so
         if user_role and user_role.can_manage_users:
-            role_name = new_user_data.get('role').lower()
+            # get the role name from the request
+            role_name     = new_user_data.get('role').lower()
+            
             # Query the database for the role with the given name
             new_user_role = db.session.query(Role).filter_by(role_name=role_name).first()
+            
             # If no such role exists, return an error
             if not new_user_role:
                 return {'error': f'Role: {role_name} invalid'}, 400
@@ -59,7 +62,6 @@ def register_user(user_role):
             role_name = 'user'
             # Query the database for the default 'user' role
             new_user_role = db.session.query(Role).filter_by(role_name=role_name).first()
-            # Optionally, handle the case if the default user role is not found
 
         # Create a new user instance
         new_user = User(
